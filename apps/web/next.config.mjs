@@ -159,6 +159,7 @@ const config = {
       },
     ]
   },
+  exportTrailingSlash: true,
   webpack: (webpackConfig, { webpack }) => {
     // tree shake sentry tracing
     webpackConfig.plugins.push(
