@@ -1,12 +1,11 @@
 import { Flex, Skeleton, Text, FlexGap, FlexGapProps } from '@pancakeswap/uikit'
-import { FC } from 'react'
 import styled from 'styled-components'
-import { formatAmount, formatAmountNotation } from 'utils/formatInfoNumbers'
+import { formatAmount, formatAmountNotation, tokenPrecisionStyle } from 'utils/formatInfoNumbers'
 
 const formatOptions = {
   notation: 'standard' as formatAmountNotation,
   displayThreshold: 0.001,
-  tokenPrecision: true,
+  tokenPrecision: 'normal' as tokenPrecisionStyle,
 }
 
 interface TokenDisplayProps extends FlexGapProps {
@@ -25,7 +24,7 @@ const TextLabel = styled(Text)`
   }
 `
 
-const PairPriceDisplay: FC<React.PropsWithChildren<TokenDisplayProps>> = ({
+const PairPriceDisplay: React.FC<React.PropsWithChildren<TokenDisplayProps>> = ({
   value,
   inputSymbol,
   outputSymbol,
@@ -37,7 +36,7 @@ const PairPriceDisplay: FC<React.PropsWithChildren<TokenDisplayProps>> = ({
     <FlexGap alignItems="baseline" {...props}>
       <Flex alignItems="inherit">
         <TextLabel mr="8px" bold>
-          {format ? formatAmount(typeof value === 'string' ? parseFloat(value) : value, formatOptions) : value}
+          {format ? formatAmount(typeof value === 'string' ? parseFloat(value) ?? 0 : value, formatOptions) : value}
         </TextLabel>
         {inputSymbol && outputSymbol && (
           <Text color="textSubtle" fontSize="20px" bold lineHeight={1.1}>

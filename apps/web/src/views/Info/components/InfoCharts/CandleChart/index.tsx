@@ -2,8 +2,8 @@ import { useRef, useState, useEffect, useCallback, Dispatch, SetStateAction } fr
 import { useTranslation } from '@pancakeswap/localization'
 import { createChart, IChartApi } from 'lightweight-charts'
 import { format } from 'date-fns'
-import { useTheme } from 'styled-components'
-import { CandleChartLoader } from 'views/Info/components/ChartLoaders'
+import { useTheme } from '@pancakeswap/hooks'
+import { CandleChartLoader } from 'components/ChartLoaders'
 import { baseColors, lightColors, darkColors } from '@pancakeswap/ui/tokens/colors'
 
 const CANDLE_CHART_HEIGHT = 250
@@ -15,7 +15,7 @@ export type LineChartProps = {
 } & React.HTMLAttributes<HTMLDivElement>
 
 const CandleChart = ({ data, setValue, setLabel, ...rest }: LineChartProps) => {
-  const theme = useTheme()
+  const { theme } = useTheme()
   const {
     currentLanguage: { locale },
   } = useTranslation()

@@ -55,7 +55,7 @@ const CollectionCard: React.FC<React.PropsWithChildren<CollectionCardProps>> = (
 }) => {
   const renderBody = () => (
     <CardBody p="8px">
-      <StyledImage src={bgSrc} height={125} width={375} />
+      <StyledImage src={bgSrc} alt={`nft-collection-card-${collectionName}`} height={125} width={375} />
       <Flex
         position="relative"
         height="65px"

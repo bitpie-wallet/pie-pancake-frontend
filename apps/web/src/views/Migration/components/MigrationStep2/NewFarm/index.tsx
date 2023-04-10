@@ -3,10 +3,9 @@ import BigNumber from 'bignumber.js'
 import { useAccount } from 'wagmi'
 import { getFarmApr } from 'utils/apr'
 import { useTranslation } from '@pancakeswap/localization'
-import { useFarms, usePriceCakeBusd, usePollFarmsWithUserData } from 'state/farms/hooks'
+import { useFarms, usePriceCakeUSD, usePollFarmsWithUserData } from 'state/farms/hooks'
 import { useFarmsV1 } from 'state/farmsV1/hooks'
-import { DeserializedFarm } from '@pancakeswap/farms'
-import { FarmWithStakedValue } from 'views/Farms/components/types'
+import { DeserializedFarm, FarmWithStakedValue } from '@pancakeswap/farms'
 import MigrationFarmTable from '../../MigrationFarmTable'
 import { DesktopV2ColumnSchema } from '../../types'
 
@@ -15,7 +14,7 @@ const NewFarmStep2: React.FC<React.PropsWithChildren> = () => {
   const { address: account } = useAccount()
   const { data: farmsLP, userDataLoaded, regularCakePerBlock } = useFarms()
   const { data: farmsV1LP } = useFarmsV1()
-  const cakePrice = usePriceCakeBusd()
+  const cakePrice = usePriceCakeUSD()
 
   usePollFarmsWithUserData()
 

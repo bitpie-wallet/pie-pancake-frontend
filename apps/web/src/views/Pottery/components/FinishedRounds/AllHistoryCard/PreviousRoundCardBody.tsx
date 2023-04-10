@@ -5,7 +5,7 @@ import { Box, Flex, Text, CardBody, CardRibbon, LinkExternal, Skeleton, Balance 
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { useTranslation } from '@pancakeswap/localization'
-import { usePriceCakeBusd } from 'state/farms/hooks'
+import { usePriceCakeUSD } from 'state/farms/hooks'
 import { PotteryRoundInfo } from 'state/types'
 import Divider from 'components/Divider'
 import { getDrawnDate } from 'views/Lottery/helpers'
@@ -58,7 +58,7 @@ const PreviousRoundCardBody: React.FC<React.PropsWithChildren<PreviousRoundCardB
     currentLanguage: { locale },
   } = useTranslation()
   const { isFetched, roundId, prizePot, totalPlayers, txid, winners, lockDate } = finishedRoundInfo
-  const cakePriceBusd = usePriceCakeBusd()
+  const cakePriceBusd = usePriceCakeUSD()
 
   const prizeAsBn = new BigNumber(prizePot)
   const prize = getBalanceNumber(prizeAsBn)
@@ -123,6 +123,7 @@ const PreviousRoundCardBody: React.FC<React.PropsWithChildren<PreviousRoundCardB
             </Flex>
           </Flex>
           <LinkExternal
+            isBscScan
             m={['10px auto auto auto', '10px auto auto auto', 'auto 0 0 auto']}
             href={getBlockExploreLink(txid, 'transaction')}
           >

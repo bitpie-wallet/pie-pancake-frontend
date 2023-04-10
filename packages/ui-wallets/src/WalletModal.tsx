@@ -17,7 +17,7 @@ import {
   WarningIcon,
 } from '@pancakeswap/uikit'
 import { atom, useAtom } from 'jotai'
-import { FC, lazy, PropsWithChildren, Suspense, useMemo, useState } from 'react'
+import { lazy, PropsWithChildren, Suspense, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { StepIntro } from './components/Intro'
 import {
@@ -42,7 +42,7 @@ type LinkOfDevice = string | DeviceLink
 export type WalletConfigV2<T = unknown> = {
   id: string
   title: string
-  icon: string | FC<React.PropsWithChildren<SvgProps>>
+  icon: string | React.FC<React.PropsWithChildren<SvgProps>>
   connectorId: T
   deepLink?: string
   installed?: boolean
@@ -94,7 +94,7 @@ const TabContainer = ({ children, docLink, docText }: PropsWithChildren<{ docLin
           md: 'card',
         }}
         zIndex="modal"
-        width="full"
+        width="100%"
       >
         {index === 0 && children}
         {index === 1 && <StepIntro docLink={docLink} docText={docText} />}
@@ -127,7 +127,7 @@ function MobileModal<T>({
   })
 
   return (
-    <AtomBox width="full">
+    <AtomBox width="100%">
       {error ? (
         <AtomBox
           display="flex"
@@ -178,7 +178,7 @@ function MobileModal<T>({
 function WalletSelect<T>({
   wallets,
   onClick,
-  displayCount = 5,
+  displayCount = 6,
 }: {
   wallets: WalletConfigV2<T>[]
   onClick: (wallet: WalletConfigV2<T>) => void
@@ -186,7 +186,8 @@ function WalletSelect<T>({
 }) {
   const { t } = useTranslation()
   const [showMore, setShowMore] = useState(false)
-  const walletsToShow = showMore ? wallets : wallets.slice(0, displayCount)
+  const walletDisplayCount = wallets.length > displayCount ? displayCount - 1 : displayCount
+  const walletsToShow = showMore ? wallets : wallets.slice(0, walletDisplayCount)
   const [selected] = useSelectedWallet()
   return (
     <AtomBox
@@ -229,7 +230,7 @@ function WalletSelect<T>({
                   <Icon width={24} height={24} color="textSubtle" />
                 )}
                 {wallet.id === selected?.id && (
-                  <AtomBox position="absolute" inset="0" bgc="secondary" opacity="0.5" borderRadius="12px" />
+                  <AtomBox position="absolute" inset="0px" bgc="secondary" opacity="0.5" borderRadius="12px" />
                 )}
               </AtomBox>
             </AtomBox>
@@ -239,7 +240,7 @@ function WalletSelect<T>({
           </Button>
         )
       })}
-      {!showMore && wallets.length > displayCount && (
+      {!showMore && wallets.length > walletDisplayCount && (
         <AtomBox display="flex" justifyContent="center" alignItems="center" flexDirection="column">
           <Button height="auto" variant="text" as={AtomBox} flexDirection="column" onClick={() => setShowMore(true)}>
             <AtomBox
@@ -418,7 +419,7 @@ export function WalletModalV2<T = unknown>(props: WalletModalV2Props<T>) {
   }
 
   return (
-    <ModalV2 closeOnOverlayClick {...rest}>
+    <ModalV2 closeOnOverlayClick disableOutsidePointerEvents={false} {...rest}>
       <ModalWrapper onDismiss={props.onDismiss} style={{ overflow: 'visible', border: 'none' }}>
         <AtomBox position="relative">
           <TabContainer docLink={docLink} docText={docText}>

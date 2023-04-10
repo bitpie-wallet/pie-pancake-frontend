@@ -1,11 +1,22 @@
 import { useState } from 'react'
 import { Token, Currency } from '@pancakeswap/aptos-swap-sdk'
-import { Button, Text, ErrorIcon, Flex, Message, Checkbox, Link, Tag, Grid, AutoColumn } from '@pancakeswap/uikit'
+import {
+  Button,
+  Text,
+  ErrorIcon,
+  Flex,
+  Message,
+  Checkbox,
+  LinkExternal,
+  Tag,
+  Grid,
+  AutoColumn,
+  ListLogo,
+} from '@pancakeswap/uikit'
 import { getBlockExploreLink } from 'utils'
 import truncateHash from '@pancakeswap/utils/truncateHash'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useCombinedInactiveList } from 'state/lists/hooks'
-import { ListLogo } from 'components/Logo'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAddUserToken } from 'state/user'
 import { WrappedTokenInfo } from '@pancakeswap/token-lists'
@@ -66,13 +77,11 @@ function ImportToken({ tokens, handleCurrencySelect }: ImportProps) {
             {chainId && (
               <Flex justifyContent="space-between" width="100%">
                 <Text mr="4px">{address}</Text>
-                <Link href={getBlockExploreLink(token.address, 'token', chainId)} external>
-                  (
+                <LinkExternal isAptosScan href={getBlockExploreLink(token.address, 'token', chainId)}>
                   {t('View on %site%', {
-                    site: 'Explorer',
+                    site: t('Explorer'),
                   })}
-                  )
-                </Link>
+                </LinkExternal>
               </Flex>
             )}
           </Grid>

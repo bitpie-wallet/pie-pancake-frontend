@@ -1,6 +1,6 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { Text, useModal } from '@pancakeswap/uikit'
-import { Currency, CurrencyAmount, Trade, TradeType } from '@pancakeswap/sdk'
+import { Text, useModal, Column } from '@pancakeswap/uikit'
+import { Currency, CurrencyAmount } from '@pancakeswap/sdk'
 
 import { GreyCard } from 'components/Card'
 import { CommitButton } from 'components/CommitButton'
@@ -12,8 +12,8 @@ import { Field } from 'state/swap/actions'
 import SettingsModal, { withCustomOnDismiss } from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import { useCallback, useEffect, useState } from 'react'
-import Column from 'components/Layout/Column'
 import { useSwapCallback } from 'hooks/useSwapCallback'
+import { logGTMClickSwapEvent } from 'utils/customGTMEventTracking'
 
 import ConfirmSwapModal from '../../components/ConfirmSwapModal'
 import ProgressSteps from '../../components/ProgressSteps'
@@ -33,7 +33,7 @@ interface StableSwapCommitButtonPropsType {
     OUTPUT?: Currency
   }
   isExpertMode: boolean
-  trade: Trade<Currency, Currency, TradeType> | StableTrade
+  trade: StableTrade
   swapInputError: string
   currencyBalances: {
     INPUT?: CurrencyAmount<Currency>
@@ -62,7 +62,7 @@ export default function StableSwapCommitButton({
 
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(trade, allowedSlippage, null, swapCalls)
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
-    tradeToConfirm: Trade<Currency, Currency, TradeType> | StableTrade | undefined
+    tradeToConfirm: StableTrade | undefined
     attemptingTxn: boolean
     swapErrorMessage: string | undefined
     txHash: string | undefined
@@ -151,6 +151,7 @@ export default function StableSwapCommitButton({
       })
       onPresentConfirmModal()
     }
+    logGTMClickSwapEvent()
   }, [isExpertMode, handleSwap, onPresentConfirmModal, trade])
 
   // useEffect

@@ -1,10 +1,14 @@
 import { multicallAddresses } from '@pancakeswap/multicall'
+import { masterChefV3Addresses } from '@pancakeswap/farms'
+import { DEPLOYER_ADDRESSES } from '@pancakeswap/v3-sdk'
+import { V3_QUOTER_ADDRESSES } from '@pancakeswap/smart-router/evm'
 
 export default {
   masterChef: {
     97: '0xB4A466911556e39210a6bB2FaECBB59E4eB7E43d',
     56: '0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652',
   },
+  masterChefV3: masterChefV3Addresses,
   masterChefV1: {
     97: '0x1d32c2945C8FDCBc7156c553B7cEa4325a17f4f9',
     56: '0x73feaa1eE314F8c655E354234017bE2193C9E24E',
@@ -79,7 +83,7 @@ export default {
     97: '',
   },
   chainlinkOracleBNB: {
-    56: '0xD276fCF34D54A926773c399eBAa772C12ec394aC',
+    56: '0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE',
     97: '',
   },
   chainlinkOracleCAKE: {
@@ -130,10 +134,13 @@ export default {
     56: '0x01871991587d5671f3A2d4E2BcDC22F4E026396e',
     97: '0xDB9D365b50E62fce747A90515D2bd1254A16EbB9',
   },
-  // TODO: multi
   zap: {
     56: '0xD4c4a7C55c9f7B3c48bafb6E8643Ba79F42418dF',
     97: '0xD85835207054F25620109bdc745EC1D1f84F04e1',
+  },
+  stableSwapNativeHelper: {
+    56: '0x52E5D1e24A4308ef1A221C949cb2F7cbbAFEE090',
+    97: '0x6e4B1D7C65E86f1723720a5fE8993f0908108b64',
   },
   iCake: {
     56: '0x3C458828D1622F5f4d526eb0d24Da8C4Eb8F07b1',
@@ -161,4 +168,23 @@ export default {
     56: '0x0726a8C8206b9eC0AfB788df5adb36a8AEDB13c2',
     97: '0xBab5d3B6bA24E185f216419f3ba07f03984bF983',
   },
+  mmLinkedPool: {
+    1: '0x9Ca2A439810524250E543BA8fB6E88578aF242BC',
+    5: '0x7bb894Ca487568dD55054193c3238d7B1f46BB92',
+    56: '0xfEACb05b373f1A08E68235bA7FC92636b92ced01',
+  },
+  nftPositionManager: {
+    1: '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364',
+    5: '0x427bF5b37357632377eCbEC9de3626C71A5396c1',
+    56: '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364',
+    97: '0x427bF5b37357632377eCbEC9de3626C71A5396c1',
+  },
+  v3PoolDeployer: DEPLOYER_ADDRESSES,
+  v3Migrator: {
+    1: '0xbC203d7f83677c7ed3F7acEc959963E7F4ECC5C2',
+    5: '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364',
+    56: '0xbC203d7f83677c7ed3F7acEc959963E7F4ECC5C2',
+    97: '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364',
+  },
+  quoter: V3_QUOTER_ADDRESSES,
 }

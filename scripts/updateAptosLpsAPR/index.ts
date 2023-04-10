@@ -28,6 +28,7 @@ interface FarmsOneWeekData {
   }
 }
 
+const CAKE_PID = 0
 const LP_HOLDERS_FEE = 0.0017
 const WEEKS_IN_A_YEAR = 52.1429
 const FETCH_URL = 'https://api.coinmarketcap.com/dexer/v3/platformpage/pair-pages'
@@ -56,15 +57,15 @@ const fetchFarmLpsInfo = async (addresses: string[]): Promise<SingleFarmResponse
       const token = pair.quotoTokenAddress.toLowerCase()
       const quoteToken = pair.baseTokenAddress.toLowerCase()
       const [address0, address1] = Pair.parseType(address)
-      if (address0 === quoteToken && address1 === token) {
+      if ((address0 === quoteToken && address1 === token) || (address0 === token && address1 === quoteToken)) {
         return pair
       }
     })
 
     return {
       id: address,
-      volumeUSD: farmPriceInfo.volumeUsd24h || '0',
-      reserveUSD: farmPriceInfo.liquidity || '0',
+      volumeUSD: farmPriceInfo?.volumeUsd24h || '0',
+      reserveUSD: farmPriceInfo?.liquidity || '0',
     }
   })
 }
@@ -77,7 +78,7 @@ const fetchFarmsOneWeekAgo = async (farmsAtLatestBlock: SingleFarmResponse[]) =>
   farmsAtLatestBlock.forEach((farm) => {
     if (response[farm.id]) {
       if (response[farm.id].updateDate !== currentDate) {
-        const isMoreThanAWeek = response[farm.id].usdList.length >= 8
+        const isMoreThanAWeek = response[farm.id].usdList.length >= 7
         const usdList = [...response[farm.id]?.usdList]
 
         if (isMoreThanAWeek) {
@@ -116,15 +117,10 @@ const fetchFarmsOneWeekAgo = async (farmsAtLatestBlock: SingleFarmResponse[]) =>
     let volumeUSD = '0'
     let reserveUSD = '0'
     const { usdList } = responseData[address]
-    const oneWeekData = usdList.slice(0, 7)
 
-    if (oneWeekData.length > 0) {
-      volumeUSD = oneWeekData
-        .reduce((sum, single) => new BigNumber(sum).plus(single.volumeUSD).toNumber(), 0)
-        .toString()
-      reserveUSD = oneWeekData
-        .reduce((sum, single) => new BigNumber(sum).plus(single.reserveUSD).toNumber(), 0)
-        .toString()
+    if (usdList.length > 0) {
+      volumeUSD = usdList.reduce((sum, single) => new BigNumber(sum).plus(single.volumeUSD).toNumber(), 0).toString()
+      reserveUSD = usdList.reduce((sum, single) => new BigNumber(sum).plus(single.reserveUSD).toNumber(), 0).toString()
     }
     return { id: address, volumeUSD, reserveUSD }
   })
@@ -140,7 +136,7 @@ const getAprsForFarmGroup = async (addresses: string[]): Promise<any> => {
       // In case farm is too new to estimate LP APR (i.e. not returned in farmsOneWeekAgo query) - return 0
       let lpApr = new BigNumber(0)
       if (farmWeekAgo) {
-        const volume7d = new BigNumber(farm.volumeUSD).minus(new BigNumber(farmWeekAgo.volumeUSD))
+        const volume7d = new BigNumber(farmWeekAgo.volumeUSD)
         const lpFees7d = volume7d.times(LP_HOLDERS_FEE)
         const lpFeesInAYear = lpFees7d.times(WEEKS_IN_A_YEAR)
         // Some untracked pairs like KUN-QSD will report 0 volume
@@ -161,7 +157,7 @@ const getAprsForFarmGroup = async (addresses: string[]): Promise<any> => {
 }
 
 const fetchAndUpdateAptosLPsAPR = async () => {
-  const farmsConfig = getFarmConfig(ChainId.MAINNET)
+  const farmsConfig = getFarmConfig(ChainId.MAINNET).filter((i) => i.pid !== CAKE_PID)
 
   const lowerCaseAddresses = farmsConfig.map((farm) => farm.lpAddress.toLowerCase())
   console.info(`Fetching farm data for ${lowerCaseAddresses.length} addresses`)

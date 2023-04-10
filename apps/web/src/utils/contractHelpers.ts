@@ -43,6 +43,10 @@ import {
   getNonBscVaultAddress,
   getCrossFarmingSenderAddress,
   getCrossFarmingReceiverAddress,
+  getMMLinkedPoolAddress,
+  getStableSwapNativeHelperAddress,
+  getMasterChefV3Address,
+  getV3MigratorAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -97,6 +101,12 @@ import nonBscVault from 'config/abi/nonBscVault.json'
 import crossFarmingSenderAbi from 'config/abi/crossFarmingSender.json'
 import crossFarmingReceiverAbi from 'config/abi/crossFarmingReceiver.json'
 import crossFarmingProxyAbi from 'config/abi/crossFarmingProxy.json'
+import mmLinkedPoolAbi from 'config/abi/mmLinkedPool.json'
+import stableSwapNativeHelperAbi from 'config/abi/stableSwapNativeHelper.json'
+import sid from 'config/abi/SID.json'
+import sidResolver from 'config/abi/SIDResolver.json'
+import masterChefV3Abi from 'config/abi/masterChefV3.json'
+import v3MigratorAbi from 'config/abi/v3Migrator.json'
 
 // Types
 import type {
@@ -147,6 +157,12 @@ import type {
   CrossFarmingSender,
   CrossFarmingReceiver,
   CrossFarmingProxy,
+  MmLinkedPool,
+  StableSwapNativeHelper,
+  SID,
+  SIDResolver,
+  MasterChefV3,
+  V3Migrator,
 } from 'config/abi/types'
 import { ChainId } from '@pancakeswap/sdk'
 
@@ -182,6 +198,9 @@ export const getIfoV2Contract = (address: string, signer?: Signer | Provider) =>
 }
 export const getIfoV3Contract = (address: string, signer?: Signer | Provider) => {
   return getContract({ abi: ifoV3Abi, address, signer })
+}
+export const getMMLinkedPoolContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({ abi: mmLinkedPoolAbi, address: getMMLinkedPoolAddress(chainId), signer }) as MmLinkedPool
 }
 export const getSouschefContract = (id: number, signer?: Signer | Provider) => {
   const config = poolsConfig.find((pool) => pool.sousId === id)
@@ -371,6 +390,14 @@ export const getNonBscVaultContract = (signer?: Signer | Provider, chainId?: num
   return getContract({ abi: nonBscVault, address: getNonBscVaultAddress(chainId), chainId, signer }) as NonBscVault
 }
 
+export const getSidContract = (address: string, signer?: Signer | Provider) => {
+  return getContract({ abi: sid, address, signer }) as SID
+}
+
+export const getSidResolverContract = (address: string, signer?: Signer | Provider) => {
+  return getContract({ abi: sidResolver, address, signer }) as SIDResolver
+}
+
 export const getCrossFarmingSenderContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({
     abi: crossFarmingSenderAbi,
@@ -395,4 +422,31 @@ export const getCrossFarmingProxyContract = (
   chainId?: number,
 ) => {
   return getContract({ abi: crossFarmingProxyAbi, address: proxyContractAddress, chainId, signer }) as CrossFarmingProxy
+}
+
+export const getStableSwapNativeHelperContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({
+    abi: stableSwapNativeHelperAbi,
+    address: getStableSwapNativeHelperAddress(chainId),
+    chainId,
+    signer,
+  }) as StableSwapNativeHelper
+}
+
+export const getMasterChefV3Contract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({
+    abi: masterChefV3Abi,
+    address: getMasterChefV3Address(chainId),
+    chainId,
+    signer,
+  }) as MasterChefV3
+}
+
+export const getV3MigratorContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({
+    abi: v3MigratorAbi,
+    address: getV3MigratorAddress(chainId),
+    chainId,
+    signer,
+  }) as V3Migrator
 }

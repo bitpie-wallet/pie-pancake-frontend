@@ -1,5 +1,6 @@
 import { useTranslation } from "@pancakeswap/localization";
-import { memo } from "react";
+import React, { memo } from "react";
+import type { FeeAmount } from "@pancakeswap/v3-sdk";
 import { Text, TooltipText } from "../../../../components/Text";
 import { Tag, TagProps } from "../../../../components/Tag/index";
 import { useTooltip } from "../../../../hooks/useTooltip";
@@ -12,6 +13,9 @@ import {
   VerifiedIcon,
   VoteIcon,
   LockIcon,
+  RocketIcon,
+  CheckmarkCircleIcon,
+  CurrencyIcon,
 } from "../../../../components/Svg";
 
 const CoreTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
@@ -19,7 +23,7 @@ const CoreTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
   return (
     <Tag
       variant="secondary"
-      style={{ background: "none" }}
+      style={{ background: "none", width: "fit-content" }}
       outline
       startIcon={<VerifiedIcon width="18px" color="secondary" mr="4px" />}
       {...props}
@@ -36,7 +40,7 @@ const FarmAuctionTagToolTipContent = memo(() => {
 
 const FarmAuctionTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
   const { t } = useTranslation();
-  const { targetRef, tooltip, tooltipVisible } = useTooltip(<FarmAuctionTagToolTipContent />, { placement: "right" });
+  const { targetRef, tooltip, tooltipVisible } = useTooltip(<FarmAuctionTagToolTipContent />, { placement: "top" });
   return (
     <>
       {tooltipVisible && tooltip}
@@ -51,12 +55,16 @@ const FarmAuctionTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
 
 const StableFarmTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
   const { t } = useTranslation();
-  const { targetRef, tooltip, tooltipVisible } = useTooltip("Fees are lower for stable LP", { placement: "right" });
+  const { targetRef, tooltip, tooltipVisible } = useTooltip("Fees are lower for stable LP", { placement: "top" });
   return (
     <>
       {tooltipVisible && tooltip}
-      <TooltipText ref={targetRef} style={{ textDecoration: "none", alignSelf: "center" }}>
-        <Tag variant="failure" outline {...props}>
+      <TooltipText
+        ref={targetRef}
+        display="flex"
+        style={{ textDecoration: "none", justifyContent: "center", alignSelf: "center" }}
+      >
+        <Tag variant="failure" outline startIcon={<CurrencyIcon width="18px" color="failure" mr="4px" />} {...props}>
           {t("Stable LP")}
         </Tag>
       </TooltipText>
@@ -127,6 +135,21 @@ const VoteNowTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
   );
 };
 
+const VotedTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
+  const { t } = useTranslation();
+  return (
+    <Tag
+      variant="success"
+      style={{ background: "none" }}
+      outline
+      startIcon={<CheckmarkCircleIcon width="18px" color="success" mr="4px" />}
+      {...props}
+    >
+      {t("Voted")}
+    </Tag>
+  );
+};
+
 const SoonTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
   const { t } = useTranslation();
   return (
@@ -145,6 +168,27 @@ const ClosedTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
   );
 };
 
+const BoostedTag: React.FC<React.PropsWithChildren<TagProps>> = (props) => {
+  const { t } = useTranslation();
+  return (
+    <Tag variant="success" outline startIcon={<RocketIcon width="18px" color="success" mr="4px" />} {...props}>
+      {t("Boosted")}
+    </Tag>
+  );
+};
+
+const V2Tag: React.FC<TagProps> = (props) => (
+  <Tag variant="textDisabled" outline {...props}>
+    V2
+  </Tag>
+);
+
+const V3FeeTag: React.FC<TagProps & { feeAmount: FeeAmount }> = ({ feeAmount, ...props }) => (
+  <Tag variant="secondary" outline {...props}>
+    {feeAmount / 10_000}%
+  </Tag>
+);
+
 const Tags = {
   CoreTag,
   FarmAuctionTag,
@@ -158,6 +202,10 @@ const Tags = {
   StableFarmTag,
   LockedPoolTag,
   LockedOrAutoPoolTag,
+  BoostedTag,
+  VotedTag,
+  V2Tag,
+  V3FeeTag,
 };
 
 export default Tags;

@@ -13,12 +13,13 @@ import {
   TooltipText,
   useTooltip,
   NextLinkFromReactRouter,
+  Link,
+  AutoColumn,
 } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from '@pancakeswap/localization'
 import useTotalSupply from 'hooks/useTotalSupply'
-import useBUSDPrice from 'hooks/useBUSDPrice'
-import { multiplyPriceByAmount } from 'utils/prices'
+import { useStablecoinPriceAmount } from 'hooks/useBUSDPrice'
 import { useAccount } from 'wagmi'
 import { BIG_INT_ZERO } from 'config/constants/exchange'
 import { useGetRemovedTokenAmounts } from 'views/RemoveLiquidity/RemoveStableLiquidity/hooks/useStableDerivedBurnInfo'
@@ -30,7 +31,6 @@ import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 
 import { LightCard } from '../Card'
-import { AutoColumn } from '../Layout/Column'
 import CurrencyLogo from '../Logo/CurrencyLogo'
 import { DoubleCurrencyLogo } from '../Logo'
 import { RowBetween, RowFixed } from '../Layout/Row'
@@ -41,7 +41,7 @@ const FixedHeightRow = styled(RowBetween)`
   height: 24px;
 `
 
-interface PositionCardProps extends CardProps {
+export interface PositionCardProps extends CardProps {
   pair: Pair
   showUnwrapped?: boolean
   currency0: Currency
@@ -53,7 +53,7 @@ interface PositionCardProps extends CardProps {
   poolTokenPercentage: Percent
 }
 
-const useTokensDeposited = ({ pair, totalPoolTokens, userPoolBalance }) => {
+export const useTokensDeposited = ({ pair, totalPoolTokens, userPoolBalance }) => {
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -69,22 +69,20 @@ const useTokensDeposited = ({ pair, totalPoolTokens, userPoolBalance }) => {
   return [token0Deposited, token1Deposited]
 }
 
-const useTotalUSDValue = ({ currency0, currency1, token0Deposited, token1Deposited }) => {
-  const token0Price = useBUSDPrice(currency0)
-  const token1Price = useBUSDPrice(currency1)
+export const useTotalUSDValue = ({ currency0, currency1, token0Deposited, token1Deposited }) => {
+  const token0USDValue = useStablecoinPriceAmount(
+    currency0,
+    token0Deposited ? parseFloat(token0Deposited.toSignificant(6)) : null,
+  )
+  const token1USDValue = useStablecoinPriceAmount(
+    currency1,
+    token1Deposited ? parseFloat(token1Deposited.toSignificant(6)) : null,
+  )
 
-  const token0USDValue =
-    token0Deposited && token0Price
-      ? multiplyPriceByAmount(token0Price, parseFloat(token0Deposited.toSignificant(6)))
-      : null
-  const token1USDValue =
-    token1Deposited && token1Price
-      ? multiplyPriceByAmount(token1Price, parseFloat(token1Deposited.toSignificant(6)))
-      : null
   return token0USDValue && token1USDValue ? token0USDValue + token1USDValue : null
 }
 
-const usePoolTokenPercentage = ({ userPoolBalance, totalPoolTokens }) => {
+export const usePoolTokenPercentage = ({ userPoolBalance, totalPoolTokens }) => {
   return !!userPoolBalance &&
     !!totalPoolTokens &&
     JSBI.greaterThanOrEqual(totalPoolTokens.quotient, userPoolBalance.quotient)
@@ -135,12 +133,12 @@ const withLPValuesFactory =
     )
   }
 
-const withLPValues = withLPValuesFactory({
+export const withLPValues = withLPValuesFactory({
   useLPValuesHook: useTokensDeposited,
   hookArgFn: ({ pair, userPoolBalance, totalPoolTokens }) => ({ pair, userPoolBalance, totalPoolTokens }),
 })
 
-const withStableLPValues = withLPValuesFactory({
+export const withStableLPValues = withLPValuesFactory({
   useLPValuesHook: useGetRemovedTokenAmounts,
   hookArgFn: ({ userPoolBalance }) => ({
     lpAmount: userPoolBalance?.quotient?.toString(),
@@ -212,7 +210,7 @@ function MinimalPositionCardView({
                 )}
                 <FixedHeightRow>
                   <Text color="textSubtle" small>
-                    {t('Share of Pool')}:
+                    {t('Share in Trading Pair')}:
                   </Text>
                   <Text>{poolTokenPercentage ? `${poolTokenPercentage.toFixed(6)}%` : '-'}</Text>
                 </FixedHeightRow>
@@ -254,8 +252,24 @@ function MinimalPositionCardView({
             <span role="img" aria-label="pancake-icon">
               🥞
             </span>{' '}
-            {t(
-              "By adding liquidity you'll earn 0.17% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.",
+            {isStableLP ? (
+              <>
+                {t(
+                  'By adding liquidity, you’ll earn 50% from the fees of all trades on this pair, proportional to your share in the trading pair. Fees are added to the pair, accrue in real time, and can be claimed by withdrawing your liquidity. For more information on Stableswap fees click',
+                )}
+                <Link
+                  style={{ display: 'inline' }}
+                  ml="4px"
+                  external
+                  href="https://docs.pancakeswap.finance/products/stableswap#stableswap-fees"
+                >
+                  {t('here.')}
+                </Link>
+              </>
+            ) : (
+              t(
+                "By adding liquidity you'll earn 0.17% of all trades on this pair proportional to your share in the trading pair. Fees are added to the pair, accrue in real time and can be claimed by withdrawing your liquidity.",
+              )
             )}
           </Text>
         </LightCard>
@@ -366,7 +380,7 @@ function FullPositionCard({
           )}
 
           <FixedHeightRow>
-            <Text color="textSubtle">{t('Share of Pool')}</Text>
+            <Text color="textSubtle">{t('Share in Trading Pair')}</Text>
             <Text>
               {poolTokenPercentage
                 ? `${poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)}%`
@@ -407,15 +421,15 @@ export const MinimalPositionCard = withLPValues(MinimalPositionCardView)
 export const StableFullPositionCardContainer = withStableLPValues(FullPositionCard)
 
 export const StableFullPositionCard = (props) => {
-  const { stableSwapConfig, ...config } = useStableConfig({
+  const stableConfig = useStableConfig({
     tokenA: props.pair?.token0,
     tokenB: props.pair?.token1,
   })
 
-  if (!stableSwapConfig) return null
+  if (!stableConfig.stableSwapConfig) return null
 
   return (
-    <StableConfigContext.Provider value={{ stableSwapConfig, ...config }}>
+    <StableConfigContext.Provider value={stableConfig}>
       <StableFullPositionCardContainer {...props} />
     </StableConfigContext.Provider>
   )

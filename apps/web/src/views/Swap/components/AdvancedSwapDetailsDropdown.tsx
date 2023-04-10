@@ -5,7 +5,7 @@ import useLastTruthy from 'hooks/useLast'
 
 import { AdvancedSwapDetails, AdvancedSwapDetailsProps } from './AdvancedSwapDetails'
 
-const AdvancedDetailsFooter = styled.div<{ show: boolean }>`
+export const AdvancedDetailsFooter = styled.div<{ show: boolean }>`
   margin-top: ${({ show }) => (show ? '16px' : 0)};
   padding-top: 16px;
   padding-bottom: 16px;
@@ -27,6 +27,7 @@ export default function AdvancedSwapDetailsDropdown({
   inputAmount,
   outputAmount,
   tradeType,
+  isMM = false,
   ...rest
 }: AdvancedSwapDetailsProps) {
   const trade = useMemo(
@@ -56,6 +57,7 @@ export default function AdvancedSwapDetailsDropdown({
         inputAmount={inputAmount ?? lastTrade.inputAmount ?? undefined}
         outputAmount={outputAmount ?? lastTrade.outputAmount ?? undefined}
         tradeType={tradeType ?? lastTrade.tradeType ?? undefined}
+        isMM={isMM}
       />
     </AdvancedDetailsFooter>
   )

@@ -1,53 +1,31 @@
-import { testnetTokens } from './tokens'
+import { getIFOUID, IFO_POOL_STORE_TAG } from 'views/Ifos/constants'
+import { mainnetTokens } from './tokens/1'
 import { Ifo } from './types'
 
 export const ifos: Ifo[] = [
   {
-    id: 'btc',
-    cIFO: false,
-    address:
-      '0xaec55cf0445a1d93fc3eb2b499227aa6199cdad3b83ba2b3907d6129cac2e19a::IFO::IFOPool<0xe0e5ad285cbcdb873b2ee15bb6bcac73d9d763bcb58395e894255eeecf3992cf::pancake::Cake, 0x8c805723ebc0a7fc5b7d3e7b75d567918e806b3461cb9fa21941a9edc0220bf::devnet_coins::DevnetBTC, 0xb664f557c71de85be5cf91563961c5bb05345ba2b33f361533d2c184577185b7::uints::U1>',
-    isActive: true,
-    name: 'BTC',
-    poolUnlimited: {
-      saleAmount: '9 BTC',
-      raiseAmount: '$123,456',
-      cakeToBurn: '$0',
-      distributionRatio: 0.7,
-    },
-    currency: testnetTokens.cake,
-    token: testnetTokens.btc,
-    releaseTime: 0,
-    campaignId: '1',
-    articleUrl: '',
-    tokenOfferingPrice: 0.00004939,
-    version: 3.2,
-    twitterUrl: '',
-    description: 'Moon description',
-    vestingTitle: '$BNB - BNB vesting title.',
-  },
-  {
-    id: 'bnb',
-    cIFO: false,
-    address:
-      '0xaec55cf0445a1d93fc3eb2b499227aa6199cdad3b83ba2b3907d6129cac2e19a::IFO::IFOPool<0xe0e5ad285cbcdb873b2ee15bb6bcac73d9d763bcb58395e894255eeecf3992cf::pancake::Cake, 0x8c805723ebc0a7fc5b7d3e7b75d567918e806b3461cb9fa21941a9edc0220bf::devnet_coins::DevnetBNB, 0xb664f557c71de85be5cf91563961c5bb05345ba2b33f361533d2c184577185b7::uints::U1>',
+    id: 'move',
+    address: `${IFO_POOL_STORE_TAG}<${mainnetTokens.cake.address}, ${mainnetTokens.move.address}, ${getIFOUID(1)}>`,
     isActive: false,
-    name: 'BNB',
+    name: 'MOVE',
     poolUnlimited: {
-      saleAmount: '300,000,000 BNB',
-      raiseAmount: '$123,456',
+      saleAmount: '10,000,000 MOVE',
+      raiseAmount: '$400,000',
       cakeToBurn: '$0',
-      distributionRatio: 0.6,
+      distributionRatio: 1,
     },
-    currency: testnetTokens.cake,
-    token: testnetTokens.bnb,
-    releaseTime: 0,
     campaignId: '1',
-    articleUrl: '',
-    tokenOfferingPrice: 0.00004939,
+    currency: mainnetTokens.cake,
+    token: mainnetTokens.move,
+    releaseTime: 1675944000,
+    articleUrl: 'https://medium.com/pancakeswap/bluemove-move-ifo-to-be-hosted-on-aptos-pancakeswap-25adee83d1ee',
+    tokenOfferingPrice: 0.04,
     version: 3.2,
-    twitterUrl: '',
-    description: 'Moon description',
-    vestingTitle: '$BNB - BNB vesting title.',
+    twitterUrl: 'https://twitter.com/BlueMove_OA',
+    description:
+      'BlueMove is the leading multi-chain NFT Marketplace on Aptos and Sui, where creators can easily create their own NFTs, and freely list their collections for buying, selling and trading',
+    vestingTitle: 'Stake $MOVE to access BlueMove Launchpad projects and earn platform fees',
   },
 ]
+
+export default ifos

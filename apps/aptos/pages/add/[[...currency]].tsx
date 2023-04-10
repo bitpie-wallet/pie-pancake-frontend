@@ -8,7 +8,7 @@ import ChoosePair from 'components/Liquidity/components/ChoosePair'
 import withLPValues from 'components/Liquidity/hocs/withLPValues'
 import useCurrencySelectRoute, { CurrencySelectorContext } from 'components/Liquidity/hooks/useCurrencySelectRoute'
 import useMintPair, { MintPairContext } from 'components/Liquidity/hooks/useMintPair'
-import { L0_USDC } from 'config/coins'
+import { CAKE } from 'config/coins'
 import { useIsTransactionUnsupported, useIsTransactionWarning } from 'hooks/Trades'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useActiveChainId } from 'hooks/useNetwork'
@@ -30,7 +30,7 @@ const AddLiquidityPage = () => {
   const native = useNativeCurrency()
   const activeChainId = useActiveChainId()
 
-  const defaultCurrencies = useMemo(() => [native.address, L0_USDC[activeChainId].address], [native, activeChainId])
+  const defaultCurrencies = useMemo(() => [native.address, CAKE[activeChainId].address], [native, activeChainId])
 
   const currencies = useCurrencySelectRoute(defaultCurrencies)
   const mintPairState = useMintPair(currencies)
@@ -53,7 +53,7 @@ const AddLiquidityPage = () => {
           title={t('Add Liquidity')}
           subtitle={t('Receive LP tokens and earn 0.17% trading fees')}
           helper={t(
-            'Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pool.',
+            'Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pair.',
           )}
           config={<SettingsButton />}
           backTo={showAddLiquidity ? goToChoose : '/liquidity'}

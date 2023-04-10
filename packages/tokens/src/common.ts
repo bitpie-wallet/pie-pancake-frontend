@@ -44,14 +44,6 @@ export const USDC_ETH = new ERC20Token(
   'USD Coin',
 )
 
-export const USDC_RINKEBY = new ERC20Token(
-  ChainId.RINKEBY,
-  '0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b',
-  6,
-  'tUSDC',
-  'test USD Coin',
-)
-
 export const USDC_GOERLI = new ERC20Token(
   ChainId.GOERLI,
   '0x07865c6E87B9F70255377e024ace6630C1Eaa37F',
@@ -105,15 +97,6 @@ export const BUSD_ETH = new ERC20Token(
   'https://www.paxos.com/busd/',
 )
 
-export const BUSD_RINKEBY = new ERC20Token(
-  ChainId.RINKEBY,
-  '0x4e2442A6f7AeCE64Ca33d31756B5390860BF973E',
-  18,
-  'BUSD',
-  'Binance USD',
-  'https://www.paxos.com/busd/',
-)
-
 export const BUSD_GOERLI = new ERC20Token(
   ChainId.GOERLI,
   '0xb809b9B2dc5e93CB863176Ea2D565425B03c0540',
@@ -125,13 +108,28 @@ export const BUSD_GOERLI = new ERC20Token(
 
 export const BUSD: Record<ChainId, ERC20Token> = {
   [ChainId.ETHEREUM]: BUSD_ETH,
-  [ChainId.RINKEBY]: BUSD_RINKEBY,
   [ChainId.GOERLI]: BUSD_GOERLI,
   [ChainId.BSC]: BUSD_BSC,
   [ChainId.BSC_TESTNET]: BUSD_TESTNET,
 }
 
 export const CAKE = {
+  [ChainId.ETHEREUM]: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898',
+    18,
+    'CAKE',
+    'PancakeSwap Token',
+    'https://pancakeswap.finance/',
+  ),
+  [ChainId.GOERLI]: new ERC20Token(
+    ChainId.GOERLI,
+    '0xc2C3eAbE0368a2Ea97f485b03D1098cdD7d0c081',
+    18,
+    'CAKE',
+    'PancakeSwap Token',
+    'https://pancakeswap.finance/',
+  ),
   [ChainId.BSC]: CAKE_MAINNET,
   [ChainId.BSC_TESTNET]: CAKE_TESTNET,
 }
@@ -140,7 +138,6 @@ export const USDC = {
   [ChainId.BSC]: USDC_BSC,
   [ChainId.BSC_TESTNET]: USDC_TESTNET,
   [ChainId.ETHEREUM]: USDC_ETH,
-  [ChainId.RINKEBY]: USDC_RINKEBY,
   [ChainId.GOERLI]: USDC_GOERLI,
 }
 
@@ -156,3 +153,10 @@ export const WBTC_ETH = new ERC20Token(
   'WBTC',
   'Wrapped BTC',
 )
+
+export const STABLE_COIN = {
+  [ChainId.ETHEREUM]: USDT[ChainId.ETHEREUM],
+  [ChainId.GOERLI]: USDC[ChainId.GOERLI],
+  [ChainId.BSC]: USDT[ChainId.BSC],
+  [ChainId.BSC_TESTNET]: BUSD[ChainId.BSC_TESTNET],
+} satisfies Record<ChainId, ERC20Token>

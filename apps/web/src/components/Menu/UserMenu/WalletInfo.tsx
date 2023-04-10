@@ -8,6 +8,7 @@ import {
   Skeleton,
   Text,
   CopyAddress,
+  FlexGap,
 } from '@pancakeswap/uikit'
 import { ChainId, WNATIVE } from '@pancakeswap/sdk'
 import { FetchStatus } from 'config/constants/types'
@@ -21,6 +22,7 @@ import { ChainLogo } from 'components/Logo/ChainLogo'
 import { getBlockExploreLink, getBlockExploreName } from 'utils'
 import { formatBigNumber, getFullDisplayBalance } from '@pancakeswap/utils/formatBalance'
 import { useBalance } from 'wagmi'
+import { useSidNameForAddress } from 'hooks/useSid'
 import CakeBenefitsCard from './CakeBenefitsCard'
 
 const COLORS = {
@@ -37,9 +39,10 @@ interface WalletInfoProps {
 const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss }) => {
   const { t } = useTranslation()
   const { account, chainId, chain } = useActiveWeb3React()
+  const { sidName } = useSidNameForAddress(account)
   const isBSC = chainId === ChainId.BSC
-  const bnbBalance = useBalance({ addressOrName: account, chainId: ChainId.BSC })
-  const nativeBalance = useBalance({ addressOrName: account, enabled: !isBSC })
+  const bnbBalance = useBalance({ address: account, chainId: ChainId.BSC })
+  const nativeBalance = useBalance({ address: account, enabled: !isBSC })
   const native = useNativeCurrency()
   const wNativeToken = !isBSC ? WNATIVE[chainId] : null
   const wBNBToken = WNATIVE[ChainId.BSC]
@@ -58,7 +61,10 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
       <Text color="secondary" fontSize="12px" textTransform="uppercase" fontWeight="bold" mb="8px">
         {t('Your Address')}
       </Text>
-      <CopyAddress tooltipMessage={t('Copied')} account={account} mb="24px" />
+      <FlexGap flexDirection="column" mb="24px" gap="8px">
+        <CopyAddress tooltipMessage={t('Copied')} account={account} />
+        {sidName ? <Text color="textSubtle">{sidName}</Text> : null}
+      </FlexGap>
       {hasLowNativeBalance && (
         <Message variant="warning" mb="24px">
           <Box>
@@ -120,7 +126,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
               BNB Smart Chain
             </Text>
           </Flex>
-          <LinkExternal href={getBlockExploreLink(account, 'address', ChainId.BSC)}>
+          <LinkExternal isBscScan href={getBlockExploreLink(account, 'address', ChainId.BSC)}>
             {getBlockExploreName(ChainId.BSC)}
           </LinkExternal>
         </Flex>

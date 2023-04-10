@@ -1,5 +1,6 @@
 import Path from 'path'
 import fs from 'fs'
+import { describe, it } from 'vitest'
 import teams from 'config/constants/teams'
 import { NftLocation } from 'state/nftMarket/types'
 
@@ -43,9 +44,21 @@ const whitelist = [
   'Zap in %amount% %symbol% for %lpSymbol%',
   'Order cancellation: %inputAmount% %inputTokenSymbol% for %outputAmount% %outputTokenSymbol%',
   'Order cancellation',
+  'Launch App',
+  'Newest First',
+  'Oldest First',
+  'Sort Title A-Z',
+  'Sort Title Z-A',
+  'All articles',
+  'Learn basics of PancakeSwap',
+  'Learn how',
+  'You might also like',
+  'Chef’s choice',
+  'Recommended Readings by Chefs',
+  'Latest News about PancakeSwap and more!',
 ]
 
-describe('Check translations integrity', () => {
+describe.concurrent('Check translations integrity', () => {
   it.each(allTranslationKeys)('Translation key value should be equal', (key) => {
     expect(key).toEqual(translations[key])
   })

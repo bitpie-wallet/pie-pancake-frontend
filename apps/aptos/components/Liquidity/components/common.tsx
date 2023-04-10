@@ -19,7 +19,7 @@ import { getLPSymbol } from 'utils/getLpSymbol'
 import styled from 'styled-components'
 import { GreyCard } from 'components/Card'
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components/Logo'
-import { useUserSlippage } from 'state/user'
+import { useUserSlippage } from '@pancakeswap/utils/user'
 import formatAmountDisplay from 'utils/formatAmountDisplay'
 
 import { CurrencySelectorValue } from '../hooks/useCurrencySelectRoute'
@@ -175,7 +175,7 @@ export const AddLiquidityModalHeader = ({
         </GreyCard>
       </AutoColumn>
       <RowBetween>
-        <Subtitle>{t('Your pool share')}</Subtitle>
+        <Subtitle>{t('Your share in the pair')}</Subtitle>
         <Text>{noLiquidity ? '100' : poolTokenPercentage?.toSignificant(4)}%</Text>
       </RowBetween>
       <AutoColumn gap="8px">{children}</AutoColumn>

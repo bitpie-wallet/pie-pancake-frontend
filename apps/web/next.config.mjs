@@ -3,25 +3,12 @@ import { withSentryConfig } from '@sentry/nextjs'
 import { withAxiom } from 'next-axiom'
 import BundleAnalyzer from '@next/bundle-analyzer'
 import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin'
-import NextTranspileModules from 'next-transpile-modules'
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const withTM = NextTranspileModules([
-  '@pancakeswap/ui',
-  '@pancakeswap/uikit',
-  '@pancakeswap/swap-sdk-core',
-  '@pancakeswap/farms',
-  '@pancakeswap/localization',
-  '@pancakeswap/hooks',
-  '@pancakeswap/multicall',
-  '@pancakeswap/token-lists',
-  '@pancakeswap/utils',
-  '@pancakeswap/tokens',
-  '@pancakeswap/smart-router',
-])
+// const withTM = NextTranspileModules([])
 
 const withVanillaExtract = createVanillaExtractPlugin()
 
@@ -35,13 +22,16 @@ const sentryWebpackPluginOptions =
         //   urlPrefix, include, ignore
         silent: false, // Logging when deploying to check if there is any problem
         validate: true,
-        // For all available options, see:
+        hideSourceMaps: false,
         // https://github.com/getsentry/sentry-webpack-plugin#options.
       }
     : {
+        hideSourceMaps: false,
         silent: true, // Suppresses all logs
         dryRun: !process.env.SENTRY_AUTH_TOKEN,
       }
+
+const blocksPage = ['/trading-reward', '/api/routing']
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -51,13 +41,33 @@ const config = {
   experimental: {
     scrollRestoration: true,
   },
+  transpilePackages: [
+    '@pancakeswap/ui',
+    '@pancakeswap/uikit',
+    '@pancakeswap/swap-sdk-core',
+    '@pancakeswap/farms',
+    '@pancakeswap/localization',
+    '@pancakeswap/hooks',
+    '@pancakeswap/multicall',
+    '@pancakeswap/token-lists',
+    '@pancakeswap/utils',
+    '@pancakeswap/tokens',
+    '@pancakeswap/v3-sdk',
+    '@pancakeswap/smart-router',
+    '@wagmi',
+    'wagmi',
+    '@ledgerhq',
+    '@gnosis.pm/safe-apps-wagmi',
+  ],
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    contentDispositionType: 'attachment',
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'static-nft.pancakeswap.com',
+        pathname: '/mainnet/**',
       },
     ],
     unoptimized: true,
@@ -72,10 +82,23 @@ const config = {
         source: '/info/pool/:address',
         destination: '/info/pools/:address',
       },
+      {
+        source: '/nodeRealApi/:path*',
+        destination: 'https://pancake.nodereal.cc/graphql',
+      },
     ]
   },
   async headers() {
     return [
+      {
+        source: '/favicon.ico',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, immutable, max-age=31536000',
+          },
+        ],
+      },
       {
         source: '/logo.png',
         headers: [
@@ -157,6 +180,11 @@ const config = {
         destination: '/info/pairs/:address',
         permanent: true,
       },
+      ...blocksPage.map((p) => ({
+        source: p,
+        destination: '/404',
+        permanent: false,
+      })),
     ]
   },
   exportTrailingSlash: true,
@@ -172,6 +200,4 @@ const config = {
   },
 }
 
-export default withBundleAnalyzer(
-  withVanillaExtract(withSentryConfig(withTM(withAxiom(config)), sentryWebpackPluginOptions)),
-)
+export default withBundleAnalyzer(withVanillaExtract(withSentryConfig(withAxiom(config), sentryWebpackPluginOptions)))

@@ -1,4 +1,3 @@
-import transpileModules from 'next-transpile-modules'
 import bundleAnalyzer from '@next/bundle-analyzer'
 import { withAxiom } from 'next-axiom'
 
@@ -9,23 +8,6 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const withTH = transpileModules([
-  '@pancakeswap/ui',
-  '@pancakeswap/uikit',
-  '@pancakeswap/localization',
-  '@pancakeswap/hooks',
-  '@pancakeswap/awgmi',
-  '@pancakeswap/utils',
-  '@pancakeswap/token-lists',
-  '@pancakeswap/tokens',
-  '@pancakeswap/farms',
-])
-
-const blocksPage =
-  process.env.NODE_ENV === 'production'
-    ? ['/farms', '/farms/history', '/ifo', '/ifo/history', '/pools', '/pools/history']
-    : []
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -33,6 +15,15 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  transpilePackages: [
+    '@pancakeswap/ui',
+    '@pancakeswap/uikit',
+    '@pancakeswap/localization',
+    '@pancakeswap/hooks',
+    '@pancakeswap/utils',
+    '@pancakeswap/tokens',
+    '@pancakeswap/farms',
+  ],
   async redirects() {
     return [
       {
@@ -40,13 +31,8 @@ const nextConfig = {
         destination: '/swap',
         permanent: false,
       },
-      ...blocksPage.map((p) => ({
-        source: p,
-        destination: '/404',
-        permanent: false,
-      })),
     ]
   },
 }
 
-export default withBundleAnalyzer(withVanillaExtract(withTH(withAxiom(nextConfig))))
+export default withBundleAnalyzer(withVanillaExtract(withAxiom(nextConfig)))

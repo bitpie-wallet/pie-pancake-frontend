@@ -66,11 +66,13 @@ export const computeOfferingAndRefundAmount = (amount: string, ifo_pool: IFOPool
  * compute_release_amount
  */
 export const computeReleaseAmount = (
+  getNow: () => number,
   ifo_metadata: IFOMetadata['data'],
   ifo_pool: IFOPool,
   vesting_schedule: VestingSchedule,
 ): BigNumber => {
-  const current_time = Date.now() / 1000
+  const current_time = getNow() / 1000
+
   if (current_time < +ifo_metadata.vesting_start_time + +ifo_pool.vesting_cliff) {
     return BIG_ZERO
   }
@@ -80,13 +82,16 @@ export const computeReleaseAmount = (
 
   const time_since_start = current_time - +ifo_metadata.vesting_start_time
   const seconds_per_slice = +ifo_pool.vesting_slice_period_seconds
-  const vested_slice_periods = time_since_start / seconds_per_slice
+  const vested_slice_periods = Math.floor(time_since_start / seconds_per_slice)
+
   const vested_seconds = vested_slice_periods * seconds_per_slice
 
-  let vested_amount = new BigNumber(vesting_schedule.amount_total).times(vested_seconds).div(ifo_pool.vesting_duration)
-  vested_amount = vested_amount.minus(vesting_schedule.amount_released)
+  const vested_amount = new BigNumber(vesting_schedule.amount_total)
+    .times(vested_seconds)
+    .div(ifo_pool.vesting_duration)
+    .toFixed(0)
 
-  return vested_amount
+  return new BigNumber(vested_amount).minus(vesting_schedule.amount_released)
 }
 
 /**

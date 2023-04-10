@@ -6,8 +6,10 @@ export default defineConfig({
     'connectors/miniProgram': 'connectors/miniProgram/index.ts',
     'connectors/binanceWallet': 'connectors/binanceWallet/index.ts',
     'connectors/blocto': 'connectors/blocto/index.ts',
-    chains: 'chains/index.ts',
+    'connectors/trustWallet': 'connectors/trustWallet/index.ts',
   },
+  treeshake: true,
+  splitting: true,
   format: ['esm', 'cjs'],
   dts: true,
 })

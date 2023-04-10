@@ -1,11 +1,14 @@
 import { Currency, CurrencyAmount, Pair, TradeType } from '@pancakeswap/sdk'
-import { StableSwapPair, TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
+import {
+  LegacyStableSwapPair as StableSwapPair,
+  LegacyTradeWithStableSwap as TradeWithStableSwap,
+} from '@pancakeswap/smart-router/evm'
 import { Field } from 'state/swap/actions'
 import { useCurrencyBalances } from 'state/wallet/hooks'
 import { useTranslation } from '@pancakeswap/localization'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { useWeb3React } from '@pancakeswap/wagmi'
-import { useUserSingleHopOnly, useUserSlippageTolerance } from 'state/user/hooks'
+import { useUserSlippage, useUserSingleHopOnly } from '@pancakeswap/utils/user'
 import { isAddress } from 'utils'
 
 import { computeSlippageAdjustedAmounts } from '../utils/exchange'
@@ -42,7 +45,6 @@ export function useDerivedSwapInfoWithStableSwap(
   typedValue: string,
   inputCurrency: Currency | undefined,
   outputCurrency: Currency | undefined,
-  recipient: string,
 ): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount<Currency> }
@@ -54,7 +56,7 @@ export function useDerivedSwapInfoWithStableSwap(
   const { t } = useTranslation()
   const [singleHop] = useUserSingleHopOnly()
 
-  const to: string | null = (recipient === null ? account : isAddress(recipient) || null) ?? null
+  const to: string | null = account || null
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
@@ -105,7 +107,7 @@ export function useDerivedSwapInfoWithStableSwap(
     inputError = inputError ?? t('Invalid recipient')
   }
 
-  const [allowedSlippage] = useUserSlippageTolerance()
+  const [allowedSlippage] = useUserSlippage()
 
   const slippageAdjustedAmounts =
     bestTradeWithStableSwap &&

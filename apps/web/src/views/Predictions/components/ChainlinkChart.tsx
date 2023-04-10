@@ -1,24 +1,24 @@
-import { useCallback, useMemo } from 'react'
-import { ResponsiveContainer, XAxis, YAxis, Tooltip, AreaChart, Area, Dot } from 'recharts'
-import useTheme from 'hooks/useTheme'
-import { LineChartLoader } from 'views/Info/components/ChartLoaders'
 import { useTranslation } from '@pancakeswap/localization'
-import { laggyMiddleware, useSWRContract, useSWRMulticall } from 'hooks/useSWRContract'
-import useSWRImmutable from 'swr/immutable'
-import { useSWRConfig } from 'swr'
-import { useChainlinkOracleContract } from 'hooks/useContract'
-import { ChainlinkOracle } from 'config/abi/types'
-import chainlinkOracleAbi from 'config/abi/chainlinkOracle.json'
+import { Flex, FlexGap, FlexProps, Text } from '@pancakeswap/uikit'
 import { formatBigNumberToFixed } from '@pancakeswap/utils/formatBalance'
-import { useGetRoundsByCloseOracleId, useGetSortedRounds } from 'state/predictions/hooks'
-import styled from 'styled-components'
-import { Flex, Text, FlexProps, FlexGap } from '@pancakeswap/uikit'
+import { LineChartLoader } from 'components/ChartLoaders'
 import PairPriceDisplay from 'components/PairPriceDisplay'
+import chainlinkOracleAbi from 'config/abi/chainlinkOracle.json'
+import { ChainlinkOracle } from 'config/abi/types'
+import { useChainlinkOracleContract } from 'hooks/useContract'
+import { useSWRContract, useSWRMulticall } from 'hooks/useSWRContract'
+import useTheme from 'hooks/useTheme'
+import { useCallback, useMemo } from 'react'
+import { Area, AreaChart, Dot, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { useGetRoundsByCloseOracleId, useGetSortedRounds } from 'state/predictions/hooks'
 import { NodeRound } from 'state/types'
-import useSwiper from '../hooks/useSwiper'
-import usePollOraclePrice from '../hooks/usePollOraclePrice'
-import { CHART_DOT_CLICK_EVENT } from '../helpers'
+import styled from 'styled-components'
+import { useSWRConfig } from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { useConfig } from '../context/ConfigProvider'
+import { CHART_DOT_CLICK_EVENT } from '../helpers'
+import usePollOraclePrice from '../hooks/usePollOraclePrice'
+import useSwiper from '../hooks/useSwiper'
 
 function useChainlinkLatestRound() {
   const { chainlinkOracleAddress } = useConfig()
@@ -28,6 +28,7 @@ function useChainlinkLatestRound() {
     dedupingInterval: 10 * 1000,
     refreshInterval: 10 * 1000,
     compare: (a, b) => {
+      if (!a && !b) return true
       // check is equal
       if (!a || !b) return false
       return a.eq(b)
@@ -55,7 +56,7 @@ function useChainlinkRoundDataSet() {
     chainlinkOracleAbi,
     calls,
     {
-      use: [laggyMiddleware],
+      keepPreviousData: true,
     },
   )
 

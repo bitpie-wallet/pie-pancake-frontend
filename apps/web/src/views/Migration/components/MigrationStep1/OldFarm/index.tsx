@@ -5,8 +5,7 @@ import { getFarmApr } from 'utils/apr'
 import { useTranslation } from '@pancakeswap/localization'
 import { CAKE_PER_YEAR } from 'config'
 import { useFarmsV1, usePriceCakeBusd } from 'state/farmsV1/hooks'
-import { DeserializedFarm } from '@pancakeswap/farms'
-import { FarmWithStakedValue } from 'views/Farms/components/types'
+import { DeserializedFarm, FarmWithStakedValue } from '@pancakeswap/farms'
 import MigrationFarmTable from '../../MigrationFarmTable'
 import { DesktopColumnSchema } from '../../types'
 
@@ -58,7 +57,7 @@ const OldFarmStep1: React.FC<React.PropsWithChildren> = () => {
   return (
     <MigrationFarmTable
       title={t('Old Farms')}
-      noStakedFarmText={t('You are not currently staking in any v1 farms.')}
+      noStakedFarmText={t('You are not currently staking in any farms that require migrations.')}
       account={account}
       cakePrice={cakePrice}
       columnSchema={DesktopColumnSchema}

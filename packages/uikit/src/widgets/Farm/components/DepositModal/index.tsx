@@ -3,9 +3,10 @@ import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import _toNumber from "lodash/toNumber";
 import { useTranslation } from "@pancakeswap/localization";
-import { getFullDisplayBalance, formatNumber } from "@pancakeswap/utils/formatBalance";
+import { getFullDisplayBalance, formatNumber, getDecimalAmount } from "@pancakeswap/utils/formatBalance";
 import { getInterestBreakdown } from "@pancakeswap/utils/compoundApyHelpers";
 import { BIG_ZERO } from "@pancakeswap/utils/bigNumber";
+import { trimTrailZero } from "@pancakeswap/utils/trimTrailZero";
 import { Modal, ModalV2, ModalBody, ModalActions, ModalInput } from "../../../Modal/index";
 import { Flex, Box } from "../../../../components/Box";
 import { Text } from "../../../../components/Text";
@@ -16,11 +17,11 @@ import { Message, MessageText } from "../../../../components/Message";
 import { AutoRenewIcon, ErrorIcon, CalculateIcon } from "../../../../components/Svg";
 import { RoiCalculatorModal } from "../../../../components/RoiCalculatorModal";
 
-const AnnualRoiContainer = styled(Flex)`
+const AnnualRoiContainer = styled((props) => <Flex {...props} />)`
   cursor: pointer;
 `;
 
-const AnnualRoiDisplay = styled(Text)`
+const AnnualRoiDisplay = styled((props) => <Text {...props} />)`
   width: 72px;
   max-width: 72px;
   overflow: hidden;
@@ -34,7 +35,7 @@ interface DepositModalProps {
   max: BigNumber;
   stakedBalance: BigNumber;
   multiplier?: string;
-  lpPrice: BigNumber;
+  lpPrice?: BigNumber;
   lpLabel?: string;
   tokenName?: string;
   apr?: number;
@@ -47,21 +48,22 @@ interface DepositModalProps {
   showCrossChainFarmWarning?: boolean;
   crossChainWarningText?: string;
   decimals: number;
-  bCakeCalculatorSlot?: (stakingTokenBalance: string) => React.ReactNode;
+  allowance?: BigNumber;
+  enablePendingTx?: boolean;
   onDismiss?: () => void;
   onConfirm: (amount: string) => void;
+  handleApprove?: () => void;
+  bCakeCalculatorSlot?: (stakingTokenBalance: string) => React.ReactNode;
 }
 
 const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
   account,
   max,
   stakedBalance,
-  onConfirm,
-  onDismiss,
   tokenName = "",
   multiplier,
   displayApr,
-  lpPrice,
+  lpPrice = BIG_ZERO,
   lpLabel = "",
   apr = 0,
   addLiquidityUrl = "",
@@ -71,15 +73,29 @@ const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
   showCrossChainFarmWarning,
   crossChainWarningText,
   decimals,
+  allowance,
+  enablePendingTx,
+  onConfirm,
+  onDismiss,
+  handleApprove,
   bCakeCalculatorSlot,
 }) => {
   const [val, setVal] = useState("");
+  const [valUSDPrice, setValUSDPrice] = useState(BIG_ZERO);
   const [pendingTx, setPendingTx] = useState(false);
   const [showRoiCalculator, setShowRoiCalculator] = useState(false);
   const { t } = useTranslation();
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(max, decimals);
   }, [max, decimals]);
+
+  const needEnable = useMemo(() => {
+    if (allowance) {
+      const amount = getDecimalAmount(new BigNumber(val), decimals);
+      return amount.gt(allowance);
+    }
+    return false;
+  }, [allowance, decimals, val]);
 
   const lpTokensToStake = new BigNumber(val);
   const fullBalanceNumber = useMemo(() => new BigNumber(fullBalance), [fullBalance]);
@@ -99,26 +115,33 @@ const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       if (e.currentTarget.validity.valid) {
-        setVal(e.currentTarget.value.replace(/,/g, "."));
+        const inputVal = e.currentTarget.value.replace(/,/g, ".");
+        setVal(inputVal);
+
+        const USDPrice = inputVal === "" ? BIG_ZERO : new BigNumber(inputVal).times(lpPrice);
+        setValUSDPrice(USDPrice);
       }
     },
-    [setVal]
+    [setVal, setValUSDPrice, lpPrice]
   );
 
   const handleSelectMax = useCallback(() => {
     setVal(fullBalance);
-  }, [fullBalance, setVal]);
+
+    const USDPrice = new BigNumber(fullBalance).times(lpPrice);
+    setValUSDPrice(USDPrice);
+  }, [fullBalance, setVal, setValUSDPrice, lpPrice]);
 
   const handlePercentInput = useCallback(
     (percent: number) => {
-      const totalAmount = fullBalanceNumber
-        .dividedBy(100)
-        .multipliedBy(percent)
-        .toNumber()
-        .toLocaleString(undefined, { maximumFractionDigits: decimals });
-      setVal(totalAmount);
+      const totalAmount = fullBalanceNumber.dividedBy(100).multipliedBy(percent);
+      const amount = trimTrailZero(totalAmount.toNumber().toFixed(decimals));
+      setVal(amount as string);
+
+      const USDPrice = totalAmount.times(lpPrice);
+      setValUSDPrice(USDPrice);
     },
-    [decimals, fullBalanceNumber]
+    [fullBalanceNumber, decimals, lpPrice]
   );
 
   if (showRoiCalculator) {
@@ -126,7 +149,7 @@ const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
       <ModalV2 isOpen={showRoiCalculator}>
         <RoiCalculatorModal
           account={account}
-          linkLabel={t("Get %symbol%", { symbol: lpLabel })}
+          linkLabel={t("Add %symbol%", { symbol: lpLabel })}
           stakingTokenBalance={stakedBalance.plus(max)}
           stakingTokenDecimals={decimals}
           stakingTokenSymbol={tokenName}
@@ -150,14 +173,17 @@ const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
       <ModalBody width={["100%", "100%", "100%", "420px"]}>
         <ModalInput
           value={val}
+          valueUSDPrice={valUSDPrice}
           onSelectMax={handleSelectMax}
           onPercentInput={handlePercentInput}
           onChange={handleChange}
           max={fullBalance}
+          maxAmount={fullBalanceNumber}
           symbol={tokenName}
           addLiquidityUrl={addLiquidityUrl}
           inputTitle={t("Stake")}
           decimals={decimals}
+          needEnable={needEnable}
         />
         {showActiveBooster ? (
           <Message variant="warning" icon={<ErrorIcon width="24px" color="warning" />} mt="32px">
@@ -197,7 +223,16 @@ const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
           <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
             {t("Cancel")}
           </Button>
-          {pendingTx ? (
+          {needEnable ? (
+            <Button
+              width="100%"
+              isLoading={enablePendingTx}
+              endIcon={enablePendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
+              onClick={handleApprove}
+            >
+              {t("Enable")}
+            </Button>
+          ) : pendingTx ? (
             <Button width="100%" isLoading={pendingTx} endIcon={<AutoRenewIcon spin color="currentColor" />}>
               {t("Confirming")}
             </Button>
@@ -217,7 +252,7 @@ const DepositModal: React.FC<React.PropsWithChildren<DepositModalProps>> = ({
           )}
         </ModalActions>
         <LinkExternal href={addLiquidityUrl} style={{ alignSelf: "center" }}>
-          {t("Get %symbol%", { symbol: tokenName })}
+          {t("Add %symbol%", { symbol: tokenName })}
         </LinkExternal>
       </ModalBody>
     </Modal>

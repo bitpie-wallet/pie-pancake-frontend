@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import styled from 'styled-components'
-import { Box, Flex, Heading, Skeleton } from '@pancakeswap/uikit'
+import { Box, Flex, Heading, Skeleton, PageSection } from '@pancakeswap/uikit'
 import { LotteryStatus } from 'config/constants/types'
-import PageSection from 'components/PageSection'
 import { useTranslation } from '@pancakeswap/localization'
 import useTheme from 'hooks/useTheme'
 import { useFetchLottery, useLottery } from 'state/lottery/hooks'
@@ -24,7 +23,6 @@ import AllHistoryCard from './components/AllHistoryCard'
 import CheckPrizesSection from './components/CheckPrizesSection'
 import HowToPlay from './components/HowToPlay'
 import useShowMoreUserHistory from './hooks/useShowMoreUserRounds'
-import { PageMeta } from '../../components/Layout/Page'
 
 const LotteryPage = styled.div`
   min-height: calc(100vh - 64px);
@@ -45,7 +43,6 @@ const Lottery = () => {
 
   return (
     <>
-      <PageMeta />
       <LotteryPage>
         <PageSection background={TITLE_BG} index={1} hasCurvedDivider={false}>
           <Hero />
@@ -82,6 +79,7 @@ const Lottery = () => {
           <CheckPrizesSection />
         </PageSection>
         <PageSection
+          position="relative"
           innerProps={{ style: { margin: '0', width: '100%' } }}
           background={isDark ? FINISHED_ROUNDS_BG_DARK : FINISHED_ROUNDS_BG}
           hasCurvedDivider={false}

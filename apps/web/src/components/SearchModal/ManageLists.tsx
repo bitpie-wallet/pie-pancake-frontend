@@ -1,8 +1,20 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { Button, CheckmarkIcon, CogIcon, Input, LinkExternal, Text, Toggle, useTooltip } from '@pancakeswap/uikit'
+import {
+  Button,
+  CheckmarkIcon,
+  CogIcon,
+  Input,
+  LinkExternal,
+  ListLogo,
+  Text,
+  Toggle,
+  useTooltip,
+  AutoColumn,
+  Column,
+} from '@pancakeswap/uikit'
 import { TokenList, Version } from '@pancakeswap/token-lists'
 import Card from 'components/Card'
-import { UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
+import { BSC_URLS, ETH_URLS, UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
 import { useAtomValue } from 'jotai'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useListState } from 'state/lists/lists'
@@ -15,13 +27,12 @@ import {
   removeList,
 } from '@pancakeswap/token-lists/react'
 import uriToHttp from '@pancakeswap/utils/uriToHttp'
+import { ChainId } from '@pancakeswap/sdk'
 
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { selectorByUrlsAtom, useActiveListUrls, useAllLists, useIsListActive } from '../../state/lists/hooks'
 
-import Column, { AutoColumn } from '../Layout/Column'
 import Row, { RowBetween, RowFixed } from '../Layout/Row'
-import { ListLogo } from '../Logo'
 import { CurrencyModalView } from './types'
 
 function listVersionLabel(version: Version): string {
@@ -99,7 +110,7 @@ const ListRow = memo(function ListRow({ listUrl }: { listUrl: string }) {
         </Button>
       )}
     </div>,
-    { placement: 'right-end', trigger: 'click' },
+    { placement: 'right-end', trigger: 'click', isInPortal: false },
   )
 
   if (!list) return null
@@ -161,6 +172,8 @@ function ManageLists({
 }) {
   const [listUrlInput, setListUrlInput] = useState<string>('')
 
+  const { chainId } = useActiveChainId()
+
   const { t } = useTranslation()
   const [, dispatch] = useListState()
 
@@ -190,7 +203,16 @@ function ManageLists({
     return listUrls
       .filter((listUrl) => {
         // only show loaded lists, hide unsupported lists
-        return Boolean(lists[listUrl].current) && !UNSUPPORTED_LIST_URLS.includes(listUrl)
+        const isValid = Boolean(lists[listUrl].current) && !UNSUPPORTED_LIST_URLS.includes(listUrl)
+
+        if (isValid) {
+          return (
+            (chainId === ChainId.ETHEREUM && ETH_URLS.includes(listUrl)) ||
+            (chainId === ChainId.BSC && BSC_URLS.includes(listUrl))
+          )
+        }
+
+        return false
       })
       .sort((u1, u2) => {
         const { current: l1 } = lists[u1]
@@ -221,7 +243,7 @@ function ManageLists({
         if (l2) return 1
         return 0
       })
-  }, [lists, activeCopy])
+  }, [lists, chainId, activeCopy])
 
   // temporary fetched list for import flow
   const [tempList, setTempList] = useState<TokenList>()
@@ -279,7 +301,7 @@ function ManageLists({
         ) : null}
       </AutoColumn>
       {tempList && (
-        <AutoColumn style={{ paddingTop: 0 }}>
+        <AutoColumn style={{ marginTop: 8 }}>
           <Card padding="12px 20px">
             <RowBetween>
               <RowFixed>

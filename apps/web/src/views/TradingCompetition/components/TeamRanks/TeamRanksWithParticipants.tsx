@@ -118,7 +118,7 @@ const TeamRanksWithParticipants: React.FC<React.PropsWithChildren<TeamRanksWithP
             </Flex>
           </TotalParticipantsCloud>
           <BunnyImageWrapper mt="24px">
-            <Image src={image} width={292} height={234} />
+            <Image src={image} alt="team-ranks-with-participants-image" width={292} height={234} />
           </BunnyImageWrapper>
         </TotalParticipantsWrapper>
       </StyledPodiumWrapper>

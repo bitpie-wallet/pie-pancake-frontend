@@ -7,7 +7,7 @@ import _toNumber from 'lodash/toNumber'
 import _get from 'lodash/get'
 import { FixedNumber } from '@ethersproject/bignumber'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
-import _find from 'lodash/find'
+import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 
 import { PoolResource } from '../types'
 import getSecondsLeftFromNow from '../utils/getSecondsLeftFromNow'
@@ -16,6 +16,7 @@ import getTokenByAddress from '../utils/getTokenByAddress'
 import { getPoolApr } from './transformCakePool'
 
 function calcPendingRewardToken({
+  currentTimestamp,
   lastRewardTimestamp,
   totalStakedToken,
   userStakedAmount,
@@ -27,7 +28,7 @@ function calcPendingRewardToken({
   isFinished,
 }): FixedNumber {
   const pendingSeconds = Math.max(
-    isFinished ? endTime - lastRewardTimestamp : getSecondsLeftFromNow(lastRewardTimestamp),
+    isFinished ? endTime - lastRewardTimestamp : getSecondsLeftFromNow(lastRewardTimestamp, currentTimestamp),
     0,
   )
 
@@ -59,27 +60,35 @@ function calcPendingRewardToken({
 
 const transformPool = (
   resource: PoolResource,
+  currentTimestamp,
   balances,
   chainId,
   prices,
-): Pool.DeserializedPool<Coin | AptosCoin> | undefined => {
+  sousId,
+):
+  | (Pool.DeserializedPool<Coin | AptosCoin> & {
+      stakeLimitEndBlock?: number
+    })
+  | undefined => {
   const startTime = _toNumber(_get(resource, 'data.start_timestamp', '0'))
 
-  const startYet = getSecondsLeftFromNow(startTime)
+  const startYet = getSecondsLeftFromNow(startTime, currentTimestamp)
 
   if (!startYet) return undefined
 
   const endTime = _toNumber(_get(resource, 'data.end_timestamp', '0'))
 
-  const isFinished = getSecondsLeftFromNow(endTime)
+  const hasRewardToken = _toNumber(_get(resource, 'data.total_reward_token.value', '0'))
+
+  const isFinished = getSecondsLeftFromNow(endTime, currentTimestamp) || !hasRewardToken
 
   const [stakingAddress, earningAddress] = splitTypeTag(resource.type)
 
   let userData = {
-    allowance: new BigNumber(0),
-    pendingReward: new BigNumber(0),
-    stakedBalance: new BigNumber(0),
-    stakingTokenBalance: new BigNumber(0),
+    allowance: BIG_ZERO,
+    pendingReward: BIG_ZERO,
+    stakedBalance: BIG_ZERO,
+    stakingTokenBalance: BIG_ZERO,
   }
 
   const totalStakedToken = _get(resource, 'data.total_staked_token.value', '0')
@@ -107,6 +116,7 @@ const transformPool = (
         const precisionFactor = _get(resource, 'data.precision_factor')
 
         const pendingReward = calcPendingRewardToken({
+          currentTimestamp,
           currentRewardDebt,
           lastRewardTimestamp,
           totalStakedToken,
@@ -139,13 +149,18 @@ const transformPool = (
     getPoolApr({
       rewardTokenPrice: _toNumber(earningTokenPrice),
       stakingTokenPrice: _toNumber(stakingTokenPrice),
-      tokenPerSecond: rewardPerSecond,
-      totalStaked: totalStakedToken,
+      tokenPerSecond: getBalanceNumber(new BigNumber(rewardPerSecond), earningToken.decimals),
+      totalStaked: getBalanceNumber(new BigNumber(totalStakedToken), stakingToken.decimals),
     }) || 0
 
+  const startBlock = _toNumber(resource.data.start_timestamp)
+
+  const stakeLimitEndBlock = _toNumber(resource.data.seconds_for_user_limit)
+
+  const stakeLimitTimeRemaining = stakeLimitEndBlock + startBlock - currentTimestamp / 1000
+
   return {
-    // Ignore sousId
-    sousId: 0,
+    sousId,
     contractAddress: {
       [chainId]: resource.type,
     },
@@ -157,9 +172,15 @@ const transformPool = (
 
     isFinished: Boolean(isFinished),
     poolCategory: PoolCategory.CORE,
-    startBlock: _toNumber(resource.data.start_timestamp),
+    startBlock,
+    endBlock: _toNumber(resource.data.end_timestamp),
+
     tokenPerBlock: resource.data.reward_per_second,
-    stakingLimit: resource.data.pool_limit_per_user ? new BigNumber(resource.data.pool_limit_per_user) : BIG_ZERO,
+    stakingLimit:
+      stakeLimitTimeRemaining > 0 && resource.data.pool_limit_per_user
+        ? new BigNumber(resource.data.pool_limit_per_user)
+        : BIG_ZERO,
+    stakeLimitEndBlock: _toNumber(resource.data.seconds_for_user_limit),
     totalStaked: new BigNumber(totalStakedToken),
 
     userData,

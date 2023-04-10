@@ -5,6 +5,7 @@ import { EXCHANGE_PAGE_PATHS } from 'config/constants/exchange'
 import { isChainSupported } from 'utils/wagmi'
 import { useProvider } from 'wagmi'
 import { ChainId } from '@pancakeswap/sdk'
+import { getChainId, CHAIN_QUERY_NAME } from 'config/chains'
 import { useActiveChainId } from './useActiveChainId'
 import { useSwitchNetworkLoading } from './useSwitchNetworkLoading'
 
@@ -23,7 +24,8 @@ export function useNetworkConnectorUpdater() {
       previousChainIdRef.current = chainId
     }
     if (loading || !router.isReady) return setPrevChainId()
-    const parsedQueryChainId = Number(router.query.chainId)
+    const parsedQueryChainId = getChainId(router.query.chain as string)
+
     if (!parsedQueryChainId && chainId === ChainId.BSC) return setPrevChainId()
     if (parsedQueryChainId !== chainId && isChainSupported(chainId)) {
       const removeQueriesFromPath =
@@ -32,15 +34,20 @@ export function useNetworkConnectorUpdater() {
           return router.pathname.startsWith(item)
         })
       const uriHash = getHashFromRouter(router)?.[0]
+      const { chainId: _chainId, ...omittedQuery } = router.query
       router.replace(
         {
           query: {
-            ...(!removeQueriesFromPath && router.query),
-            chainId,
+            ...(!removeQueriesFromPath && omittedQuery),
+            chain: CHAIN_QUERY_NAME[chainId],
           },
           ...(uriHash && { hash: uriHash }),
         },
         undefined,
+        {
+          shallow: true,
+          scroll: false,
+        },
       )
     }
     return setPrevChainId()

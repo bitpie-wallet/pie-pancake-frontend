@@ -89,9 +89,15 @@ const FinishedCompetitionBanner: React.FC<React.PropsWithChildren<FinishedCompet
           </LeftWrapper>
           <RightWrapper>
             {isDesktop ? (
-              <Image src={imgSrc} width={300} height={200} />
+              <Image src={imgSrc} alt={`finished-competition-${title}`} width={300} height={200} />
             ) : (
-              <Image className="mobile" src={imgSrc} width={190} height="100%" />
+              <Image
+                className="mobile"
+                alt={`finished-competition-${title}`}
+                src={imgSrc}
+                width={190}
+                style={{ height: '100%' }}
+              />
             )}
           </RightWrapper>
         </Flex>

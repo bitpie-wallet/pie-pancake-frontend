@@ -9,10 +9,10 @@ export function FindOtherLP() {
   return (
     <AtomBox display="flex" flexDirection="column" alignItems="center" mt="24px">
       <Text color="textSubtle" mb="8px">
-        {t("Don't see a pool you joined?")}
+        {t("Don't see a pair you joined?")}
       </Text>
       <Link href="/find" passHref>
-        <Button id="import-pool-link" variant="secondary" scale="sm" as="a">
+        <Button id="import-pool-link" variant="secondary" scale="sm">
           {t("Find other LP tokens")}
         </Button>
       </Link>

@@ -15,9 +15,9 @@ import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { FARM_DEFAULT_DECIMALS } from 'components/Farms/constants'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import { FarmWithStakedValue } from '@pancakeswap/farms'
 import useStakeFarms from '../../../hooks/useStakeFarms'
 import useUnstakeFarms from '../../../hooks/useUnstakeFarms'
-import { FarmWithStakedValue } from '../../types'
 
 interface StackedActionProps extends FarmWithStakedValue {
   userDataReady: boolean
@@ -148,6 +148,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   const [onPresentWithdraw] = useModal(
     <FarmUI.WithdrawModal
       max={stakedBalance}
+      lpPrice={lpTokenPrice}
       onConfirm={handleUnstake}
       tokenName={lpSymbol}
       decimals={FARM_DEFAULT_DECIMALS}

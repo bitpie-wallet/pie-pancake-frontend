@@ -1,6 +1,6 @@
 import { Box, BoxProps } from '@pancakeswap/uikit'
-import { FC, useEffect, useRef } from 'react'
-import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { useEffect, useRef } from 'react'
+import { useIntersectionObserver } from '@pancakeswap/hooks'
 import { NftToken } from 'state/nftMarket/types'
 import styled from 'styled-components'
 import { useTryVideoNftMedia } from 'state/nftMarket/hooks'
@@ -19,7 +19,7 @@ export const AspectRatio = ({ ratio, children, ...props }) => (
   </Box>
 )
 
-const NFTMedia: FC<
+const NFTMedia: React.FC<
   React.PropsWithChildren<
     {
       nft?: NftToken

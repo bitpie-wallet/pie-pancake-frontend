@@ -1,17 +1,20 @@
 import React, { useCallback } from 'react'
 import { Currency, CurrencyAmount, Pair, Percent, Token } from '@pancakeswap/sdk'
-import { AddIcon, Button, InjectedModalProps, Text } from '@pancakeswap/uikit'
-import { useTranslation } from '@pancakeswap/localization'
-import TransactionConfirmationModal, {
-  ConfirmationModalContent,
+import {
+  AddIcon,
+  Button,
+  InjectedModalProps,
+  Text,
   TransactionErrorContent,
-} from 'components/TransactionConfirmationModal'
-import { AutoColumn } from 'components/Layout/Column'
+  ConfirmationModalContent,
+  AutoColumn,
+} from '@pancakeswap/uikit'
+import { useTranslation } from '@pancakeswap/localization'
+import TransactionConfirmationModal from 'components/TransactionConfirmationModal'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import { Field } from 'state/burn/actions'
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components/Logo'
 import { ApprovalState } from 'hooks/useApproveCallback'
-import { ZapErrorMessages } from '../../AddLiquidity/components/ZapErrorMessage'
 
 interface ConfirmRemoveLiquidityModalProps {
   title: string
@@ -35,8 +38,6 @@ interface ConfirmRemoveLiquidityModalProps {
   tokenB: Token
   currencyA: Currency | null | undefined
   currencyB: Currency | null | undefined
-  isZap?: boolean
-  toggleZapMode?: (value: boolean) => void
 }
 
 const ConfirmRemoveLiquidityModal: React.FC<
@@ -59,8 +60,6 @@ const ConfirmRemoveLiquidityModal: React.FC<
   tokenB,
   currencyA,
   currencyB,
-  isZap,
-  toggleZapMode,
 }) => {
   const { t } = useTranslation()
 
@@ -148,15 +147,12 @@ const ConfirmRemoveLiquidityModal: React.FC<
     () =>
       liquidityErrorMessage ? (
         <>
-          {isZap && (
-            <ZapErrorMessages isSingleToken zapMode={isZap} toggleZapMode={toggleZapMode} onModalDismiss={onDismiss} />
-          )}
           <TransactionErrorContent onDismiss={onDismiss} message={liquidityErrorMessage} />
         </>
       ) : (
         <ConfirmationModalContent topContent={modalHeader} bottomContent={modalBottom} />
       ),
-    [liquidityErrorMessage, isZap, toggleZapMode, onDismiss, modalHeader, modalBottom],
+    [liquidityErrorMessage, onDismiss, modalHeader, modalBottom],
   )
 
   return (

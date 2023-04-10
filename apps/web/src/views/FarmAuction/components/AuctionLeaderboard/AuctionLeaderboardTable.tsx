@@ -18,7 +18,7 @@ import {
 import { getBlockExploreLink } from 'utils'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { useTranslation } from '@pancakeswap/localization'
-import { usePriceCakeBusd } from 'state/farms/hooks'
+import { usePriceCakeUSD } from 'state/farms/hooks'
 import { Bidder } from 'config/constants/types'
 import WhitelistedBiddersModal from '../WhitelistedBiddersModal'
 
@@ -103,7 +103,13 @@ const LeaderboardRow: React.FC<React.PropsWithChildren<LeaderboardRowProps>> = (
             </SubMenuItem>
           )}
           {account && (
-            <SubMenuItem as={LinkExternal} href={getBlockExploreLink(account, 'address')} bold={false} color="text">
+            <SubMenuItem
+              as={LinkExternal}
+              isBscScan
+              href={getBlockExploreLink(account, 'address')}
+              bold={false}
+              color="text"
+            >
               {t('Bidder Address')}
             </SubMenuItem>
           )}
@@ -118,7 +124,7 @@ const AuctionLeaderboardTable: React.FC<React.PropsWithChildren<{ bidders: Bidde
   noBidsText,
 }) => {
   const [visibleBidders, setVisibleBidders] = useState(10)
-  const cakePriceBusd = usePriceCakeBusd()
+  const cakePriceBusd = usePriceCakeUSD()
   const { t } = useTranslation()
 
   const { isMobile } = useMatchBreakpoints()

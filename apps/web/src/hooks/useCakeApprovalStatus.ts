@@ -2,8 +2,7 @@ import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { useCake } from 'hooks/useContract'
 import { useSWRContract, UseSWRContractKey } from 'hooks/useSWRContract'
-
-// TODO: refactor as useTokenApprovalStatus for generic use
+import BigNumber from 'bignumber.js'
 
 export const useCakeApprovalStatus = (spender) => {
   const { address: account } = useAccount()
@@ -23,7 +22,11 @@ export const useCakeApprovalStatus = (spender) => {
 
   const { data, mutate } = useSWRContract(key)
 
-  return { isVaultApproved: data ? data.gt(0) : false, setLastUpdated: mutate }
+  return {
+    isVaultApproved: data ? data.gt(0) : false,
+    allowance: new BigNumber(data?.toString()),
+    setLastUpdated: mutate,
+  }
 }
 
 export default useCakeApprovalStatus

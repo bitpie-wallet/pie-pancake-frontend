@@ -13,6 +13,7 @@ import {
   Text,
   useModal,
   useToast,
+  ReactMarkdown,
 } from '@pancakeswap/uikit'
 import { useWeb3LibraryContext } from '@pancakeswap/wagmi'
 import snapshot from '@snapshot-labs/snapshot.js'
@@ -25,8 +26,6 @@ import { useTranslation } from '@pancakeswap/localization'
 import truncateHash from '@pancakeswap/utils/truncateHash'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Container from 'components/Layout/Container'
-import { PageMeta } from 'components/Layout/Page'
-import ReactMarkdown from 'components/ReactMarkdown'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -36,7 +35,7 @@ import { useAccount } from 'wagmi'
 import Layout from '../components/Layout'
 import VoteDetailsModal from '../components/VoteDetailsModal'
 import { ADMINS, PANCAKE_SPACE, VOTE_THRESHOLD } from '../config'
-import Choices, { Choice, makeChoice, MINIMUM_CHOICES } from './Choices'
+import Choices, { ChoiceIdValue, makeChoice, MINIMUM_CHOICES } from './Choices'
 import { combineDateAndTime, getFormErrors } from './helpers'
 import { FormErrors, Label, SecondaryLabel } from './styles'
 import { FormState } from './types'
@@ -107,7 +106,7 @@ const CreateProposal = () => {
     }
   }
 
-  const updateValue = (key: string, value: string | Choice[] | Date) => {
+  const updateValue = (key: string, value: string | ChoiceIdValue[] | Date) => {
     setState((prevState) => ({
       ...prevState,
       [key]: value,
@@ -129,7 +128,7 @@ const CreateProposal = () => {
     updateValue('body', value)
   }
 
-  const handleChoiceChange = (newChoices: Choice[]) => {
+  const handleChoiceChange = (newChoices: ChoiceIdValue[]) => {
     updateValue('choices', newChoices)
   }
 
@@ -157,7 +156,6 @@ const CreateProposal = () => {
 
   return (
     <Container py="40px">
-      <PageMeta />
       <Box mb="48px">
         <Breadcrumbs>
           <Link href="/">{t('Home')}</Link>
@@ -258,14 +256,18 @@ const CreateProposal = () => {
                     <Text color="textSubtle" mr="16px">
                       {t('Creator')}
                     </Text>
-                    <LinkExternal href={getBlockExploreLink(account, 'address')}>{truncateHash(account)}</LinkExternal>
+                    <LinkExternal isBscScan href={getBlockExploreLink(account, 'address')}>
+                      {truncateHash(account)}
+                    </LinkExternal>
                   </Flex>
                 )}
                 <Flex alignItems="center" mb="16px">
                   <Text color="textSubtle" mr="16px">
                     {t('Snapshot')}
                   </Text>
-                  <LinkExternal href={getBlockExploreLink(snapshot, 'block')}>{snapshot}</LinkExternal>
+                  <LinkExternal isBscScan href={getBlockExploreLink(snapshot, 'block')}>
+                    {snapshot}
+                  </LinkExternal>
                 </Flex>
                 {account ? (
                   <>

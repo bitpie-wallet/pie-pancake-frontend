@@ -1,13 +1,16 @@
-import { ReactElement, useMemo } from 'react'
 import shuffle from 'lodash/shuffle'
+import { ReactElement, useMemo } from 'react'
+import EthBanner from '../EthBanner'
 import CompetitionBanner from '../CompetitionBanner'
 import IFOBanner from '../IFOBanner'
-import LotteryBanner from '../LotteryBanner'
+import V3LaunchBanner from '../V3LaunchBanner'
 import PerpetualBanner from '../PerpetualBanner'
-import useIsRenderIfoBanner from './useIsRenderIFOBanner'
-import useIsRenderLotteryBanner from './useIsRenderLotteryBanner'
+import V3Banner from '../V3Banner'
+import FarmV3MigrationBanner from '../FarmV3MigrationBanner'
 import useIsRenderCompetitionBanner from './useIsRenderCompetitionBanner'
-import AptosBanner from '../AptosBanner'
+import useIsRenderIfoBanner from './useIsRenderIFOBanner'
+
+// import TradingRewardBanner from '../TradingRewardBanner'
 
 interface IBannerConfig {
   shouldRender: boolean
@@ -28,12 +31,15 @@ interface IBannerConfig {
  */
 export const useMultipleBannerConfig = () => {
   const isRenderIFOBanner = useIsRenderIfoBanner()
-  const isRenderLotteryBanner = useIsRenderLotteryBanner()
   const isRenderCompetitionBanner = useIsRenderCompetitionBanner()
 
   return useMemo(() => {
     const NO_SHUFFLE_BANNERS: IBannerConfig[] = [
-      { shouldRender: true, banner: <AptosBanner /> },
+      { shouldRender: true, banner: <V3LaunchBanner /> },
+      { shouldRender: true, banner: <FarmV3MigrationBanner /> },
+      // { shouldRender: true, banner: <TradingRewardBanner /> },
+      { shouldRender: true, banner: <V3Banner /> },
+      { shouldRender: true, banner: <EthBanner /> },
       {
         shouldRender: isRenderIFOBanner,
         banner: <IFOBanner />,
@@ -46,10 +52,6 @@ export const useMultipleBannerConfig = () => {
         banner: <CompetitionBanner />,
       },
       {
-        shouldRender: isRenderLotteryBanner,
-        banner: <LotteryBanner />,
-      },
-      {
         shouldRender: true,
         banner: <PerpetualBanner />,
       },
@@ -57,5 +59,5 @@ export const useMultipleBannerConfig = () => {
     return [...NO_SHUFFLE_BANNERS, ...shuffle(SHUFFLE_BANNERS)]
       .filter((bannerConfig: IBannerConfig) => bannerConfig.shouldRender)
       .map((bannerConfig: IBannerConfig) => bannerConfig.banner)
-  }, [isRenderIFOBanner, isRenderLotteryBanner, isRenderCompetitionBanner])
+  }, [isRenderIFOBanner, isRenderCompetitionBanner])
 }

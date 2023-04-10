@@ -23,9 +23,7 @@ const formatPool = (pool: IFOPool): PoolCharacteristics => ({
   raisingAmountPool: pool ? new BigNumber(pool.raising_amount.toString()) : BIG_ZERO,
   offeringAmountPool: pool ? new BigNumber(pool.offering_amount.toString()) : BIG_ZERO,
   limitPerUserInLP: pool ? new BigNumber(pool.limit_per_user.toString()) : BIG_ZERO,
-  taxRate: getPoolTaxRateOverflow(+pool.pid, { ifo_pool: pool })
-    .div(TAX_PRECISION)
-    .toNumber(),
+  taxRate: getPoolTaxRateOverflow(+pool.pid, { ifo_pool: pool }).div(TAX_PRECISION).toNumber(),
   totalAmountPool: pool ? new BigNumber(pool.total_amount.toString()) : BIG_ZERO,
   sumTaxesOverflow: pool ? new BigNumber(pool.sum_taxes_overflow.toString()) : BIG_ZERO,
   vestingInformation: pool ? formatVestingInfo(pool) : undefined,
@@ -62,7 +60,7 @@ export const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
   // TODO: Currently we only support CAKE Price
   const { data: cakePrice } = useCakePrice()
 
-  const currencyPriceInUSD = useMemo(() => new BigNumber(cakePrice), [cakePrice])
+  const currencyPriceInUSD = useMemo(() => (cakePrice ? new BigNumber(cakePrice) : BIG_ZERO), [cakePrice])
 
   const finalState = useMemo(() => {
     if (

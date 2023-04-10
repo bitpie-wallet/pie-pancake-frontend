@@ -1,14 +1,15 @@
 import { useDeferredValue } from 'react'
 import useSWR from 'swr'
 import { CurrencyAmount, TradeType, Currency, Pair } from '@pancakeswap/sdk'
-import { getBestTradeExactIn, getBestTradeExactOut, createStableSwapPair } from '@pancakeswap/smart-router/evm'
+import { LegacyRouter } from '@pancakeswap/smart-router/evm'
 import { deserializeToken } from '@pancakeswap/token-lists'
 import { getAddress } from '@ethersproject/address'
 
-import { laggyMiddleware } from 'hooks/useSWRContract'
 import { useAllCommonPairs } from 'hooks/Trades'
 import { provider } from 'utils/wagmi'
 import { getBestPriceWithRouter, RequestBody } from 'state/swap/fetch/fetchBestPriceWithRouter'
+
+const { getBestTradeExactIn, getBestTradeExactOut, createStableSwapPair } = LegacyRouter
 
 const NATIVE_CURRENCY_ADDRESS = getAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')
 
@@ -36,7 +37,7 @@ function createUseBestTrade<T>(key: string, getBestTrade: (options: TradeOptions
     const deferQuotient = useDeferredValue(amount?.quotient.toString())
 
     const { data: trade } = useSWR(
-      amount
+      amount && amount.currency && currency
         ? [
             key,
             'swap',
@@ -50,9 +51,9 @@ function createUseBestTrade<T>(key: string, getBestTrade: (options: TradeOptions
           ]
         : null,
       // TODO: trader should use user Wallet address
-      () => getBestTrade({ amount, currency, tradeType, allCommonPairs, trader: '', maxHops }),
+      async () => getBestTrade({ amount, currency, tradeType, allCommonPairs, trader: '', maxHops }),
       {
-        use: [laggyMiddleware],
+        keepPreviousData: true,
       },
     )
     return trade

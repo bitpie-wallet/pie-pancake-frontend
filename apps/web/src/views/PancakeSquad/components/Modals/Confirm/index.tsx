@@ -53,7 +53,7 @@ const ConfirmModal: React.FC<React.PropsWithChildren<ConfirmModalProps>> = ({
   }
 
   return (
-    <ModalContainer $minWidth="375px">
+    <ModalContainer minWidth="375px">
       <ModalHeader background={headerBackground}>
         <ModalTitle>
           <Heading>{title}</Heading>
@@ -87,7 +87,7 @@ const ConfirmModal: React.FC<React.PropsWithChildren<ConfirmModalProps>> = ({
               <Text mb="30px" bold>
                 {t('Transaction Submitted')}
               </Text>
-              <LinkExternal href={getBlockExploreLink(txHash, 'transaction', chainId)} mb="30px">
+              <LinkExternal isBscScan href={getBlockExploreLink(txHash, 'transaction', chainId)} mb="30px">
                 {t('View on BscScan')}: {truncateHash(txHash, 8, 0)}
               </LinkExternal>
               <Flex

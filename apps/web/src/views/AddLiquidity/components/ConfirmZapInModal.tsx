@@ -1,13 +1,18 @@
 import React, { useCallback, useMemo } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Currency, CurrencyAmount, Fraction, JSBI, Pair, Percent, Token } from '@pancakeswap/sdk'
-import { InjectedModalProps, Text, ArrowDownIcon, Button, useTooltip } from '@pancakeswap/uikit'
-import { useTranslation } from '@pancakeswap/localization'
-import TransactionConfirmationModal, {
-  ConfirmationModalContent,
+import {
+  InjectedModalProps,
+  Text,
+  ArrowDownIcon,
+  Button,
+  useTooltip,
   TransactionErrorContent,
-} from 'components/TransactionConfirmationModal'
-import { AutoColumn } from 'components/Layout/Column'
+  ConfirmationModalContent,
+  AutoColumn,
+} from '@pancakeswap/uikit'
+import { useTranslation } from '@pancakeswap/localization'
+import TransactionConfirmationModal from 'components/TransactionConfirmationModal'
 import { AutoRow, RowFixed } from 'components/Layout/Row'
 import { Field } from 'state/burn/actions'
 import { CurrencyLogo } from 'components/Logo'
@@ -183,25 +188,28 @@ const ConfirmZapInModal: React.FC<React.PropsWithChildren<InjectedModalProps & C
           currencyB={swapOutCurrencyAmount ? currencies[zapSwapOutTokenField] : undefined}
           currencyBValue={swapOutCurrencyAmount?.toSignificant(6)}
         />
-        {swapOutTokenAmount && swapInTokenAmount && currencies[zapSwapTokenField] && currencies[zapSwapOutTokenField] && (
-          <AutoColumn justify="center" gap="16px">
-            <ArrowDownIcon color="textSubtle" />
-            <AutoRow gap="6px" justify="center">
-              <RowFixed gap="2px">
-                <Text>{swapInTokenAmount?.toSignificant(6)}</Text>
-                <CurrencyLogo currency={currencies[zapSwapTokenField]} />
-                <Text>{currencies[zapSwapTokenField].symbol}</Text>
-              </RowFixed>
-              <Text>{t('to')}</Text>
-              <RowFixed gap="2px">
-                <Text>{swapOutTokenAmount?.toSignificant(6)}</Text>
-                <CurrencyLogo currency={currencies[zapSwapOutTokenField]} />
-                <Text>{currencies[zapSwapOutTokenField].symbol}</Text>
-              </RowFixed>
-            </AutoRow>
-            <ArrowDownIcon color="textSubtle" />
-          </AutoColumn>
-        )}
+        {swapOutTokenAmount &&
+          swapInTokenAmount &&
+          currencies[zapSwapTokenField] &&
+          currencies[zapSwapOutTokenField] && (
+            <AutoColumn justify="center" gap="16px">
+              <ArrowDownIcon color="textSubtle" />
+              <AutoRow gap="6px" justify="center">
+                <RowFixed gap="2px">
+                  <Text>{swapInTokenAmount?.toSignificant(6)}</Text>
+                  <CurrencyLogo currency={currencies[zapSwapTokenField]} />
+                  <Text>{currencies[zapSwapTokenField].symbol}</Text>
+                </RowFixed>
+                <Text>{t('to')}</Text>
+                <RowFixed gap="2px">
+                  <Text>{swapOutTokenAmount?.toSignificant(6)}</Text>
+                  <CurrencyLogo currency={currencies[zapSwapOutTokenField]} />
+                  <Text>{currencies[zapSwapOutTokenField].symbol}</Text>
+                </RowFixed>
+              </AutoRow>
+              <ArrowDownIcon color="textSubtle" />
+            </AutoColumn>
+          )}
         <AutoColumn gap="4px">
           {tooltipVisible && tooltip}
           <PairDistribution

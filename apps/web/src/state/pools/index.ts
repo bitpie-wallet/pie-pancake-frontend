@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
-import fromPairs from 'lodash/fromPairs'
+import keyBy from 'lodash/keyBy'
 import poolsConfig from 'config/constants/pools'
 import {
   PoolsState,
@@ -22,6 +22,7 @@ import { isAddress } from 'utils'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { bscRpcProvider } from 'utils/providers'
 import { getPoolsPriceHelperLpFiles } from 'config/constants/priceHelperLps/index'
+import { farmV3ApiFetch } from 'state/farmsV3/hooks'
 import fetchFarms from '../farms/fetchFarms'
 import getFarmsPrices from '../farms/getFarmsPrices'
 import {
@@ -85,17 +86,11 @@ const initialState: PoolsState = {
 
 const cakeVaultAddress = getCakeVaultAddress()
 
-export const fetchCakePoolPublicDataAsync = () => async (dispatch, getState) => {
-  const farmsData = getState().farms.data
-  const prices = getTokenPricesFromFarm(farmsData)
+export const fetchCakePoolPublicDataAsync = () => async (dispatch) => {
+  const cakePrice = await (await fetch('https://farms-api.pancakeswap.com/price/cake')).json()
+  const stakingTokenPrice = cakePrice.price
 
-  const cakePool = poolsConfig.filter((p) => p.sousId === 0)[0]
-
-  const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
-  const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
-
-  const earningTokenAddress = isAddress(cakePool.earningToken.address)
-  const earningTokenPrice = earningTokenAddress ? prices[earningTokenAddress] : 0
+  const earningTokenPrice = cakePrice.price
 
   dispatch(
     setPoolPublicData({
@@ -143,8 +138,8 @@ export const fetchPoolsPublicDataAsync =
         currentBlockNumber ? Promise.resolve(currentBlockNumber) : bscRpcProvider.getBlockNumber(),
       ])
 
-      const blockLimitsSousIdMap = fromPairs(blockLimits.map((entry) => [entry.sousId, entry]))
-      const totalStakingsSousIdMap = fromPairs(totalStakings.map((entry) => [entry.sousId, entry]))
+      const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')
+      const totalStakingsSousIdMap = keyBy(totalStakings, 'sousId')
 
       const priceHelperLpsConfig = getPoolsPriceHelperLpFiles(chainId)
       const activePriceHelperLpsConfig = priceHelperLpsConfig.filter((priceHelperLpConfig) => {
@@ -173,7 +168,17 @@ export const fetchPoolsPublicDataAsync =
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
         : []
 
-      const prices = getTokenPricesFromFarm([...farmsData, ...farmsWithPricesOfDifferentTokenPools])
+      let farmV3: Awaited<ReturnType<typeof farmV3ApiFetch>>
+      try {
+        farmV3 = await farmV3ApiFetch(chainId)
+      } catch (error) {
+        //
+      }
+      const prices = getTokenPricesFromFarm([
+        ...farmsData,
+        ...farmsWithPricesOfDifferentTokenPools,
+        ...(farmV3?.farmsWithPrice ?? []),
+      ])
 
       const liveData = poolsConfig.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
@@ -382,7 +387,7 @@ export const PoolsSlice = createSlice({
     },
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
-      const livePoolsSousIdMap = fromPairs(livePoolsData.map((entry) => [entry.sousId, entry]))
+      const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
       state.data = state.data.map((pool) => {
         const livePoolData = livePoolsSousIdMap[pool.sousId]
         return { ...pool, ...livePoolData }
@@ -413,7 +418,7 @@ export const PoolsSlice = createSlice({
         >,
       ) => {
         const userData = action.payload
-        const userDataSousIdMap = fromPairs(userData.map((entry) => [entry.sousId, entry]))
+        const userDataSousIdMap = keyBy(userData, 'sousId')
         state.data = state.data.map((pool) => ({
           ...pool,
           userDataLoaded: true,

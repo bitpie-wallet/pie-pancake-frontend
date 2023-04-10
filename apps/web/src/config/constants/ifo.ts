@@ -7,18 +7,65 @@ export const cakeBnbLpToken = new ERC20Token(ChainId.BSC, CAKE_BNB_LP_MAINNET, 1
 
 const ifos: Ifo[] = [
   {
+    id: 'arena',
+    address: '0xC7d259712a26fa33a9a94cFB58964a67dAB27095',
+    isActive: false,
+    name: 'ARENA',
+    plannedStartTime: 1673870400, // Mon Jan 16 2023 12:00:00 UTC
+    poolBasic: {
+      raiseAmount: '$350,000',
+    },
+    poolUnlimited: {
+      raiseAmount: '$1,050,000',
+    },
+    currency: bscTokens.cake,
+    token: bscTokens.arena,
+    campaignId: '512100000',
+    articleUrl:
+      'https://pancakeswap.finance/voting/proposal/0x06598b682d9f33ec5ea0c2acf8eba13dea7c63fa08dd2c4dfd7bc7af16920d51',
+    tokenOfferingPrice: 0.04,
+    version: 3.2,
+    twitterUrl: 'https://twitter.com/ESPL_GLOBAL',
+    description:
+      'The Esports Players League (ESPL) Arena is a platform that hosts global Esports tournaments and coordinates different aspects such as setting of tournament parameters, score-keeping, prize pool payouts via crypto and more.',
+    vestingTitle: 'Use $ARENA to enjoy premium features on ESPL’s Esports tournament platform',
+  },
+  {
+    id: 'squad',
+    address: '0x57eb2e676863435a140f8bc2a0f0e955c36ed446',
+    isActive: false,
+    cIFO: true,
+    name: 'SQUAD',
+    plannedStartTime: 1671105600,
+    poolBasic: {
+      raiseAmount: '$350,000',
+    },
+    poolUnlimited: {
+      raiseAmount: '$525,000',
+    },
+    currency: bscTokens.cake,
+    token: bscTokens.squad,
+    campaignId: '512000000',
+    articleUrl:
+      'https://pancakeswap.finance/voting/proposal/0x0557149d1dc2f12f4c97b68f9d214fc52acd64aa67b29bde91e19caef30a3153',
+    tokenOfferingPrice: 0.035,
+    version: 3.2,
+    twitterUrl: 'https://twitter.com/Superpow_Squad',
+    description:
+      'Superpower Squad a super-hero themed mobile shooter with 6 game play modes. It has undergone 3 years of game development from an established gaming studio with the help of crypto native partners.',
+    vestingTitle: "$SQUAD - Utility token in Superpower Squad's world, lock into SuperDao to participate Governance.",
+  },
+  {
     id: 'mgp',
     address: '0x3fe5a79d4264fe65a1a9e3938286428a0e2e214d',
-    isActive: true,
+    isActive: false,
     name: 'MGP',
     plannedStartTime: 1666872000,
     poolBasic: {
       raiseAmount: '$437,500',
-      distributionRatio: 0.25,
     },
     poolUnlimited: {
       raiseAmount: '$1,312,500',
-      distributionRatio: 0.75,
     },
     currency: bscTokens.cake,
     token: bscTokens.mgp,
@@ -40,11 +87,9 @@ const ifos: Ifo[] = [
     name: 'WMX',
     poolBasic: {
       raiseAmount: '$300,000',
-      distributionRatio: 0.25,
     },
     poolUnlimited: {
       raiseAmount: '$900,000',
-      distributionRatio: 0.75,
     },
     currency: bscTokens.cake,
     token: bscTokens.wmx,
@@ -65,11 +110,9 @@ const ifos: Ifo[] = [
     name: 'KRS',
     poolBasic: {
       raiseAmount: '$420,000',
-      distributionRatio: 0.4,
     },
     poolUnlimited: {
       raiseAmount: '$630,000',
-      distributionRatio: 0.6,
     },
     currency: bscTokens.cake,
     token: bscTokens.krs,
@@ -89,11 +132,9 @@ const ifos: Ifo[] = [
     name: 'CO',
     poolBasic: {
       raiseAmount: '$367,500',
-      distributionRatio: 0.25,
     },
     poolUnlimited: {
       raiseAmount: '$1,102,500',
-      distributionRatio: 0.75,
     },
     currency: bscTokens.cake,
     token: bscTokens.co,
@@ -115,11 +156,9 @@ const ifos: Ifo[] = [
     name: 'HOOP',
     poolBasic: {
       raiseAmount: '$357,472.50',
-      distributionRatio: 0.3,
     },
     poolUnlimited: {
       raiseAmount: '$834,102.50',
-      distributionRatio: 0.7,
     },
     currency: bscTokens.cake,
     token: bscTokens.hoop,
@@ -139,11 +178,9 @@ const ifos: Ifo[] = [
     name: 'WOM',
     poolBasic: {
       raiseAmount: '$210,000',
-      distributionRatio: 0.1,
     },
     poolUnlimited: {
       raiseAmount: '$1,890,000',
-      distributionRatio: 0.9,
     },
     currency: bscTokens.cake,
     token: bscTokens.wom,
@@ -163,11 +200,9 @@ const ifos: Ifo[] = [
     name: 'Meta Apes ($PEEL)',
     poolBasic: {
       raiseAmount: '$400,000',
-      distributionRatio: 0.2,
     },
     poolUnlimited: {
       raiseAmount: '$1,600,000',
-      distributionRatio: 0.8,
     },
     currency: bscTokens.cake,
     token: bscTokens.peel,
@@ -188,11 +223,9 @@ const ifos: Ifo[] = [
     name: 'TRIVIA',
     poolBasic: {
       raiseAmount: '$350,000',
-      distributionRatio: 0.2,
     },
     poolUnlimited: {
       raiseAmount: '$1,400,000',
-      distributionRatio: 0.8,
     },
     currency: bscTokens.cake,
     token: bscTokens.trivia,
@@ -214,11 +247,9 @@ const ifos: Ifo[] = [
     name: 'DUET',
     poolBasic: {
       raiseAmount: '$360,000',
-      distributionRatio: 0.2,
     },
     poolUnlimited: {
       raiseAmount: '$1,440,000',
-      distributionRatio: 0.8,
     },
     currency: bscTokens.cake,
     token: bscTokens.duet,
@@ -238,11 +269,9 @@ const ifos: Ifo[] = [
     name: 'ERA (Game of Truth)',
     poolBasic: {
       raiseAmount: '$360,000',
-      distributionRatio: 0.2,
     },
     poolUnlimited: {
       raiseAmount: '$1,440,000',
-      distributionRatio: 0.8,
     },
     currency: bscTokens.cake,
     token: bscTokens.era,
@@ -262,11 +291,9 @@ const ifos: Ifo[] = [
     name: 'Froyo Games (FROYO)',
     poolBasic: {
       raiseAmount: '$1,200,000',
-      distributionRatio: 0.3,
     },
     poolUnlimited: {
       raiseAmount: '$2,800,000',
-      distributionRatio: 0.7,
     },
     currency: bscTokens.cake,
     token: bscTokens.froyo,
@@ -285,11 +312,9 @@ const ifos: Ifo[] = [
     name: 'Diviner Protocol (DPT)',
     poolBasic: {
       raiseAmount: '$180,000',
-      distributionRatio: 0.3,
     },
     poolUnlimited: {
       raiseAmount: '$420,000',
-      distributionRatio: 0.7,
     },
     currency: bscTokens.cake,
     token: bscTokens.dpt,

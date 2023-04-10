@@ -1,16 +1,15 @@
 import { ReactNode } from 'react'
-// import { bscTokens } from '@pancakeswap/tokens'
-import { Text, Flex, Box, Skeleton, TooltipText, useTooltip } from '@pancakeswap/uikit'
+import { Text, Flex, Box, Skeleton, TooltipText, useTooltip, IfoSkeletonCardDetails } from '@pancakeswap/uikit'
 import { PublicIfoData, WalletIfoData } from 'views/Ifos/types'
 import { useTranslation } from '@pancakeswap/localization'
 import { Ifo, PoolIds } from 'config/constants/types'
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber, formatNumber } from '@pancakeswap/utils/formatBalance'
 import useStablePrice from 'hooks/useStablePrice'
-import { DAY_IN_SECONDS } from 'utils/getTimePeriods'
+import { DAY_IN_SECONDS } from '@pancakeswap/utils/getTimePeriods'
 import { getStatus } from 'views/Ifos/hooks/helpers'
 import { multiplyPriceByAmount } from 'utils/prices'
-import { SkeletonCardDetails } from './Skeletons'
+import useLedgerTimestamp from 'hooks/useLedgerTimestamp'
 
 export interface IfoCardDetailsProps {
   poolId: PoolIds
@@ -106,11 +105,12 @@ const IfoCardDetails: React.FC<React.PropsWithChildren<IfoCardDetailsProps>> = (
   publicIfoData,
 }) => {
   const { t } = useTranslation()
+  const getNow = useLedgerTimestamp()
   const { startTime, endTime, currencyPriceInUSD } = publicIfoData
 
   const poolCharacteristic = publicIfoData[poolId]
 
-  const currentTime = Date.now() / 1000
+  const currentTime = getNow() / 1000
 
   const status = getStatus(currentTime, startTime, endTime)
 
@@ -185,6 +185,7 @@ const IfoCardDetails: React.FC<React.PropsWithChildren<IfoCardDetailsProps>> = (
             />
           )}
           <FooterEntry label={t('Total committed:')} value={currencyPriceInUSD.gt(0) ? totalCommitted : null} />
+          <FooterEntry label={t('Funds to raise:')} value={ifo[poolId].raiseAmount} />
           {ifo.version >= 3.2 && poolCharacteristic.vestingInformation.percentage > 0 && (
             <>
               <FooterEntry
@@ -204,7 +205,7 @@ const IfoCardDetails: React.FC<React.PropsWithChildren<IfoCardDetailsProps>> = (
                 label={t('Vesting schedule:')}
                 value={`${vestingDays} days`}
                 tooltipContent={t('The vested tokens will be released linearly over a period of %days% days.', {
-                  weeks: vestingDays,
+                  days: vestingDays,
                 })}
               />
             </>
@@ -236,7 +237,7 @@ const IfoCardDetails: React.FC<React.PropsWithChildren<IfoCardDetailsProps>> = (
         </>
       )
     }
-    return <SkeletonCardDetails />
+    return <IfoSkeletonCardDetails />
   }
 
   return <Box paddingTop="24px">{renderBasedOnIfoStatus()}</Box>

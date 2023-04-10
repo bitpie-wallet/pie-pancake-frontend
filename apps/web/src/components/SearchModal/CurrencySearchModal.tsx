@@ -12,15 +12,18 @@ import {
   Button,
   useMatchBreakpoints,
   MODAL_SWIPE_TO_CLOSE_VELOCITY,
+  ImportList,
 } from '@pancakeswap/uikit'
 import styled from 'styled-components'
+import { useListState } from 'state/lists/lists'
+import { useAllLists } from 'state/lists/hooks'
 import { usePreviousValue } from '@pancakeswap/hooks'
 import { TokenList } from '@pancakeswap/token-lists'
 import { useTranslation } from '@pancakeswap/localization'
+import { enableList, removeList, useFetchListCallback } from '@pancakeswap/token-lists/react'
 import CurrencySearch from './CurrencySearch'
 import ImportToken from './ImportToken'
 import Manage from './Manage'
-import ImportList from './ImportList'
 import { CurrencyModalView } from './types'
 
 const Footer = styled.div`
@@ -54,6 +57,8 @@ export interface CurrencySearchModalProps extends InjectedModalProps {
   otherSelectedCurrency?: Currency | null
   showCommonBases?: boolean
   commonBasesType?: string
+  showSearchInput?: boolean
+  tokensToShow?: Token[]
 }
 
 export default function CurrencySearchModal({
@@ -63,6 +68,8 @@ export default function CurrencySearchModal({
   otherSelectedCurrency,
   showCommonBases = true,
   commonBasesType,
+  showSearchInput,
+  tokensToShow,
 }: CurrencySearchModalProps) {
   const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.search)
 
@@ -85,6 +92,28 @@ export default function CurrencySearchModal({
   const [listURL, setListUrl] = useState<string | undefined>()
 
   const { t } = useTranslation()
+
+  const [, dispatch] = useListState()
+  const lists = useAllLists()
+  const adding = Boolean(lists[listURL]?.loadingRequestId)
+
+  const fetchList = useFetchListCallback(dispatch)
+
+  const [addError, setAddError] = useState<string | null>(null)
+
+  const handleAddList = useCallback(() => {
+    if (adding) return
+    setAddError(null)
+    fetchList(listURL)
+      .then(() => {
+        dispatch(enableList(listURL))
+        setModalView(CurrencyModalView.manage)
+      })
+      .catch((error) => {
+        setAddError(error.message)
+        dispatch(removeList(listURL))
+      })
+  }, [adding, dispatch, fetchList, listURL])
 
   const config = {
     [CurrencyModalView.search]: { title: t('Select a Token'), onBack: undefined },
@@ -134,14 +163,23 @@ export default function CurrencySearchModal({
             otherSelectedCurrency={otherSelectedCurrency}
             showCommonBases={showCommonBases}
             commonBasesType={commonBasesType}
+            showSearchInput={showSearchInput}
             showImportView={() => setModalView(CurrencyModalView.importToken)}
             setImportToken={setImportToken}
             height={height}
+            tokensToShow={tokensToShow}
           />
         ) : modalView === CurrencyModalView.importToken && importToken ? (
           <ImportToken tokens={[importToken]} handleCurrencySelect={handleCurrencySelect} />
         ) : modalView === CurrencyModalView.importList && importList && listURL ? (
-          <ImportList list={importList} listURL={listURL} onImport={() => setModalView(CurrencyModalView.manage)} />
+          <ImportList
+            onAddList={handleAddList}
+            addError={addError}
+            listURL={listURL}
+            listLogoURI={importList?.logoURI}
+            listName={importList?.name}
+            listTokenLength={importList?.tokens.length}
+          />
         ) : modalView === CurrencyModalView.manage ? (
           <Manage
             setModalView={setModalView}

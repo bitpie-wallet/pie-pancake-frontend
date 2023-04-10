@@ -2,9 +2,9 @@ import { Flex, Heading, Skeleton, Text, Balance } from '@pancakeswap/uikit'
 import cakeAbi from 'config/abi/cake.json'
 import { bscTokens } from '@pancakeswap/tokens'
 import { useTranslation } from '@pancakeswap/localization'
-import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { useIntersectionObserver } from '@pancakeswap/hooks'
 import { useEffect, useState } from 'react'
-import { usePriceCakeBusd } from 'state/farms/hooks'
+import { usePriceCakeUSD } from 'state/farms/hooks'
 import styled from 'styled-components'
 import { formatBigNumber, formatLocalisedCompactNumber } from '@pancakeswap/utils/formatBalance'
 import { multicallv3 } from 'utils/multicall'
@@ -62,7 +62,7 @@ const Grid = styled.div`
   }
 `
 
-const emissionsPerBlock = 11.16
+const emissionsPerBlock = 9.9
 
 /**
  * User (Planet Finance) built a contract on top of our original manual CAKE pool,
@@ -118,7 +118,7 @@ const CakeDataRow = () => {
       refreshInterval: SLOW_INTERVAL,
     },
   )
-  const cakePriceBusd = usePriceCakeBusd()
+  const cakePriceBusd = usePriceCakeUSD()
   const mcap = cakePriceBusd.times(circulatingSupply)
   const mcapString = formatLocalisedCompactNumber(mcap.toNumber())
 

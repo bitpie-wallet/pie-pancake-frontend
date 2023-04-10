@@ -1,4 +1,5 @@
-import { ChainId, Token, WBNB, ERC20Token } from '@pancakeswap/sdk'
+import { ChainId, WBNB, ERC20Token } from '@pancakeswap/sdk'
+
 import { BUSD_BSC, CAKE_MAINNET, USDT_BSC } from './common'
 
 export const bscTokens = {
@@ -2282,7 +2283,7 @@ export const bscTokens = {
   ),
   xcad: new ERC20Token(
     ChainId.BSC,
-    '0x431e0cD023a32532BF3969CddFc002c00E98429d',
+    '0xa026Ad2ceDa16Ca5FC28fd3C72f99e2C332c8a26',
     18,
     'XCAD',
     'Chainport.io-Peg XCAD Token',
@@ -2360,7 +2361,7 @@ export const bscTokens = {
     'Galactic Quadrant',
     'https://outerringmmo.com/',
   ),
-  hoop: new Token(
+  hoop: new ERC20Token(
     ChainId.BSC,
     '0xF19cfb40B3774dF6Eed83169Ad5aB0Aaf6865F25',
     18,
@@ -2368,8 +2369,8 @@ export const bscTokens = {
     'Chibi Dinos',
     'https://www.chibidinos.io/',
   ),
-  co: new Token(ChainId.BSC, '0x936B6659Ad0C1b244Ba8Efe639092acae30dc8d6', 6, 'CO', 'CO', 'https://corite.com/'),
-  krs: new Token(
+  co: new ERC20Token(ChainId.BSC, '0x936B6659Ad0C1b244Ba8Efe639092acae30dc8d6', 6, 'CO', 'CO', 'https://corite.com/'),
+  krs: new ERC20Token(
     ChainId.BSC,
     '0x37b53894e7429f794B56F22a32E1695567Ee9913',
     18,
@@ -2377,7 +2378,7 @@ export const bscTokens = {
     'Kingdom Raids',
     'https://kingdomraids.io/',
   ),
-  wmx: new Token(
+  wmx: new ERC20Token(
     ChainId.BSC,
     '0xa75d9ca2a0a1D547409D82e1B06618EC284A2CeD',
     18,
@@ -2385,7 +2386,7 @@ export const bscTokens = {
     'Wombex Token',
     'https://wombex.finance/',
   ),
-  mgp: new Token(
+  mgp: new ERC20Token(
     ChainId.BSC,
     '0xD06716E1Ff2E492Cc5034c2E81805562dd3b45fa',
     18,
@@ -2393,7 +2394,7 @@ export const bscTokens = {
     'Magpie Token',
     'https://www.magpiexyz.io/',
   ),
-  hook: new Token(
+  hook: new ERC20Token(
     ChainId.BSC,
     '0xa260E12d2B924cb899AE80BB58123ac3fEE1E2F0',
     18,
@@ -2401,12 +2402,148 @@ export const bscTokens = {
     'Hook Token',
     'https://hooked.io/',
   ),
-  hft: new Token(
+  hft: new ERC20Token(
     ChainId.BSC,
     '0x44Ec807ce2F4a6F2737A92e985f318d035883e47',
     18,
     'HFT',
     'Hashflow',
     'https://www.hashflow.com/',
+  ),
+  squad: new ERC20Token(
+    ChainId.BSC,
+    '0x724A32dFFF9769A0a0e1F0515c0012d1fB14c3bd',
+    18,
+    'SQUAD',
+    'Token SQUAD',
+    'https://ssquad.games/',
+  ),
+  zbc: new ERC20Token(
+    ChainId.BSC,
+    '0x37a56cdcD83Dce2868f721De58cB3830C44C6303',
+    9,
+    'ZBC',
+    'ZEBEC',
+    'https://zebec.io/',
+  ),
+  primal: new ERC20Token(
+    ChainId.BSC,
+    '0xCb5327Ed4649548e0d73E70b633cdfd99aF6Da87',
+    18,
+    'PRIMAL',
+    'PRIMAL Token',
+    'https://www.getprimal.com/',
+  ),
+  ankrbnb: new ERC20Token(
+    ChainId.BSC,
+    '0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827',
+    18,
+    'ankrBNB',
+    'Ankr Staked BNB',
+    'https://www.ankr.com/staking-crypto/',
+  ),
+  arena: new ERC20Token(
+    ChainId.BSC,
+    '0xCfFD4D3B517b77BE32C76DA768634dE6C738889B',
+    18,
+    'ARENA',
+    'ESPL ARENA',
+    'https://espl.co/',
+  ),
+  champ: new ERC20Token(
+    ChainId.BSC,
+    '0x7e9AB560d37E62883E882474b096643caB234B65',
+    18,
+    'CHAMP',
+    'Ultimate Champions Token',
+    'https://beta.ultimate-champions.com/',
+  ),
+  axlusdc: new ERC20Token(
+    ChainId.BSC,
+    '0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3',
+    6,
+    'axlUSDC',
+    'Axelar Wrapped USDC',
+    'https://axelarscan.io/assets/',
+  ),
+  csix: new ERC20Token(
+    ChainId.BSC,
+    '0x04756126F044634C9a0f0E985e60c88a51ACC206',
+    18,
+    'CSIX',
+    'Carbon',
+    'https://carbon.website/',
+  ),
+  bnbx: new ERC20Token(
+    ChainId.BSC,
+    '0x1bdd3Cf7F79cfB8EdbB955f20ad99211551BA275',
+    18,
+    'BNBx',
+    'Liquid Staking BNB',
+    'https://www.staderlabs.com/bnb/liquid-staking/bnbx/',
+  ),
+  sd: new ERC20Token(
+    ChainId.BSC,
+    '0x3BC5AC0dFdC871B365d159f728dd1B9A0B5481E8',
+    18,
+    'SD',
+    'Stader (Wormhole)',
+    'https://www.staderlabs.com/',
+  ),
+  ageur: new ERC20Token(
+    ChainId.BSC,
+    '0x12f31B73D812C6Bb0d735a218c086d44D5fe5f89',
+    18,
+    'agEUR',
+    'agEUR',
+    'https://app.angle.money/#/',
+  ),
+  caps: new ERC20Token(
+    ChainId.BSC,
+    '0xFfBa7529AC181c2Ee1844548e6D7061c9A597dF4',
+    18,
+    'CAPS',
+    'Capsule Coin',
+    'https://www.ternoa.network/en',
+  ),
+  lvl: new ERC20Token(
+    ChainId.BSC,
+    '0xB64E280e9D1B5DbEc4AcceDb2257A87b400DB149',
+    18,
+    'LVL',
+    'Level Token',
+    'https://level.finance/',
+  ),
+  unw: new ERC20Token(
+    ChainId.BSC,
+    '0x5b65cd9feb54F1Df3D0C60576003344079f8Dc06',
+    18,
+    'UNW',
+    'Uniwhale Token',
+    'https://www.uniwhale.co/',
+  ),
+  id: new ERC20Token(
+    ChainId.BSC,
+    '0x2dfF88A56767223A5529eA5960Da7A3F5f766406',
+    18,
+    'ID',
+    'SPACE ID',
+    'https://space.id/',
+  ),
+  rdnt: new ERC20Token(
+    ChainId.BSC,
+    '0xf7DE7E8A6bd59ED41a4b5fe50278b3B7f31384dF',
+    18,
+    'RDNT',
+    'Radiant',
+    'https://radiant.capital/',
+  ),
+  sis: new ERC20Token(
+    ChainId.BSC,
+    '0xF98b660AdF2ed7d9d9D9dAACC2fb0CAce4F21835',
+    18,
+    'SIS',
+    'Symbiosis',
+    'https://symbiosis.finance/',
   ),
 }

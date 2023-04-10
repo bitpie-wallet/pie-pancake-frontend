@@ -7,7 +7,7 @@ import { GreyCard } from 'components/Card'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useVaultApy } from 'hooks/useVaultApy'
 import { usePotteryData, useLatestVaultAddress } from 'state/pottery/hook'
-import getTimePeriods from 'utils/getTimePeriods'
+import getTimePeriods from '@pancakeswap/utils/getTimePeriods'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { PotteryDepositStatus } from 'state/types'
@@ -92,7 +92,7 @@ const Deposit: React.FC<React.PropsWithChildren> = () => {
           </Flex>
         </GreyCard>
         <Flex justifyContent="space-between">
-          <Text color="textSubtle">{t('APY')}</Text>
+          <Text color="textSubtle">{t('APR')}</Text>
           <Text bold>{apyDisplay}</Text>
         </Flex>
         {getStatus === PotteryDepositStatus.BEFORE_LOCK ? (

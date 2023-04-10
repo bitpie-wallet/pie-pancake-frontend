@@ -1,7 +1,6 @@
 import { useTranslation } from '@pancakeswap/localization'
 import { Text, TooltipText, useModal, useTooltip, Farm as FarmUI, RoiCalculatorModal } from '@pancakeswap/uikit'
 import BigNumber from 'bignumber.js'
-import _toNumber from 'lodash/toNumber'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { useFarmUserInfoCache } from 'state/farms/hook'
@@ -77,7 +76,7 @@ const ApyButton: React.FC<React.PropsWithChildren<ApyButtonProps>> = ({
     <RoiCalculatorModal
       account={account || ''}
       pid={pid}
-      linkLabel={t('Get %symbol%', { symbol: lpLabel })}
+      linkLabel={t('Add %symbol%', { symbol: lpLabel })}
       stakingTokenBalance={userBalanceInFarm}
       stakingTokenSymbol={lpSymbol}
       stakingTokenPrice={lpTokenPrice.toNumber()}

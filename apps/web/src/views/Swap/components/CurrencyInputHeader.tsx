@@ -1,19 +1,32 @@
+import { useTranslation } from '@pancakeswap/localization'
 import {
   ChartDisableIcon,
   ChartIcon,
-  Swap,
   Flex,
   HistoryIcon,
+  HotDisableIcon,
+  HotIcon,
   IconButton,
   NotificationDot,
+  Swap,
+  Text,
+  TooltipText,
   useModal,
+  useTooltip,
 } from '@pancakeswap/uikit'
+import RefreshIcon from 'components/Svg/RefreshIcon'
+import { CHAIN_REFRESH_TIME } from 'config/constants/exchange'
+import { useExpertMode } from '@pancakeswap/utils/user'
 import TransactionsModal from 'components/App/Transactions/TransactionsModal'
 import GlobalSettings from 'components/Menu/GlobalSettings'
-import RefreshIcon from 'components/Svg/RefreshIcon'
-import { ReactElement, useCallback, useContext } from 'react'
-import { useExpertModeManager } from 'state/user/hooks'
+import { useSwapHotTokenDisplay } from 'hooks/useSwapHotTokenDisplay'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useRoutingSettingChanged } from 'state/user/smartRouter'
+import { useAtom } from 'jotai'
+import { ReactElement, useCallback, useContext, useEffect, useState, memo } from 'react'
+import { isMobile } from 'react-device-detect'
 import styled from 'styled-components'
+import atomWithStorageWithErrorCatch from 'utils/atomWithStorageWithErrorCatch'
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 import { SwapFeaturesContext } from '../SwapFeaturesContext'
 
@@ -29,28 +42,72 @@ interface Props {
 
 const ColoredIconButton = styled(IconButton)`
   color: ${({ theme }) => theme.colors.textSubtle};
+  overflow: hidden;
 `
 
-const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
-  title,
-  subtitle,
-  hasAmount,
-  onRefreshPrice,
-}) => {
-  const { isChartSupported, isChartDisplayed, setIsChartDisplayed } = useContext(SwapFeaturesContext)
-  const [expertMode] = useExpertModeManager()
-  const toggleChartDisplayed = () => {
-    setIsChartDisplayed((currentIsChartDisplayed) => !currentIsChartDisplayed)
-  }
-  const [onPresentTransactionsModal] = useModal(<TransactionsModal />)
-  const handleOnClick = useCallback(() => onRefreshPrice?.(), [onRefreshPrice])
+//  disable this during the v3 campaign
+const mobileShowOnceTokenHighlightAtom = atomWithStorageWithErrorCatch('pcs::mobileShowOnceTokenHighlightV2', true)
 
-  return (
-    <Swap.CurrencyInputHeader
-      title={
-        <Flex width="100%" alignItems="center" justifyContent="space-between">
+const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = memo(
+  ({ subtitle, title, hasAmount, onRefreshPrice }) => {
+    const { t } = useTranslation()
+    const { chainId } = useActiveChainId()
+    const [mobileTooltipShowOnce, setMobileTooltipShowOnce] = useAtom(mobileShowOnceTokenHighlightAtom)
+    const [mobileTooltipShow, setMobileTooltipShow] = useState(false)
+
+    const { tooltip, tooltipVisible, targetRef } = useTooltip(<Text>{t('Check out the top traded tokens')}</Text>, {
+      placement: isMobile ? 'top' : 'bottom',
+      trigger: isMobile ? 'focus' : 'hover',
+      ...(isMobile && { manualVisible: mobileTooltipShow }),
+    })
+
+    const { isChartSupported, isChartDisplayed, setIsChartDisplayed } = useContext(SwapFeaturesContext)
+    const [expertMode] = useExpertMode()
+    const [isRoutingSettingChange] = useRoutingSettingChanged()
+    const toggleChartDisplayed = () => {
+      setIsChartDisplayed((currentIsChartDisplayed) => !currentIsChartDisplayed)
+    }
+    const [onPresentTransactionsModal] = useModal(<TransactionsModal />)
+    const [isSwapHotTokenDisplay, setIsSwapHotTokenDisplay] = useSwapHotTokenDisplay()
+
+    const mobileTooltipClickOutside = useCallback(() => {
+      setMobileTooltipShow(false)
+    }, [])
+
+    useEffect(() => {
+      if (isMobile && !mobileTooltipShowOnce) {
+        setMobileTooltipShow(true)
+        setMobileTooltipShowOnce(true)
+      }
+    }, [mobileTooltipShowOnce, setMobileTooltipShowOnce])
+
+    useEffect(() => {
+      document.body.addEventListener('click', mobileTooltipClickOutside)
+      return () => {
+        document.body.removeEventListener('click', mobileTooltipClickOutside)
+      }
+    }, [mobileTooltipClickOutside])
+
+    const titleContent = (
+      <Flex width="100%" alignItems="center" justifyContent="space-between" flexDirection="column">
+        <Flex flexDirection="column" alignItems="flex-start" width="100%" marginBottom={15}>
+          <Swap.CurrencyInputHeaderTitle>{title}</Swap.CurrencyInputHeaderTitle>
+        </Flex>
+        <Flex justifyContent="start" width="100%" height="17px" alignItems="center" mb="14px">
+          <Swap.CurrencyInputHeaderSubTitle>{subtitle}</Swap.CurrencyInputHeaderSubTitle>
+        </Flex>
+        <Flex width="100%" justifyContent="end">
           {isChartSupported && setIsChartDisplayed && (
-            <ColoredIconButton onClick={toggleChartDisplayed} variant="text" scale="sm">
+            <ColoredIconButton
+              onClick={() => {
+                if (!isChartDisplayed && isSwapHotTokenDisplay) {
+                  setIsSwapHotTokenDisplay(false)
+                }
+                toggleChartDisplayed()
+              }}
+              variant="text"
+              scale="sm"
+            >
               {isChartDisplayed ? (
                 <ChartDisableIcon color="textSubtle" />
               ) : (
@@ -58,25 +115,52 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
               )}
             </ColoredIconButton>
           )}
-          <Flex flexDirection="column" alignItems="flex-end" width="100%" mr={18}>
-            <Swap.CurrencyInputHeaderTitle>{title}</Swap.CurrencyInputHeaderTitle>
-          </Flex>
-          <Flex>
-            <NotificationDot show={expertMode}>
-              <GlobalSettings color="textSubtle" mr="0" mode={SettingsMode.SWAP_LIQUIDITY} />
-            </NotificationDot>
-            <IconButton onClick={onPresentTransactionsModal} variant="text" scale="sm">
-              <HistoryIcon color="textSubtle" width="24px" />
-            </IconButton>
-            <IconButton variant="text" scale="sm" onClick={handleOnClick}>
-              <RefreshIcon disabled={!hasAmount} color="textSubtle" width="27px" />
-            </IconButton>
-          </Flex>
+          <ColoredIconButton
+            variant="text"
+            scale="sm"
+            onClick={() => {
+              if (!isSwapHotTokenDisplay && isChartDisplayed) {
+                toggleChartDisplayed()
+              }
+              setIsSwapHotTokenDisplay(!isSwapHotTokenDisplay)
+            }}
+          >
+            {isSwapHotTokenDisplay ? (
+              <HotDisableIcon color="textSubtle" width="24px" />
+            ) : (
+              <>
+                <TooltipText
+                  ref={targetRef}
+                  onClick={() => setMobileTooltipShow(false)}
+                  display="flex"
+                  style={{ justifyContent: 'center' }}
+                >
+                  <HotIcon color="textSubtle" width="24px" />
+                </TooltipText>
+                {tooltipVisible && (!isMobile || mobileTooltipShow) && tooltip}
+              </>
+            )}
+          </ColoredIconButton>
+          <NotificationDot show={expertMode || isRoutingSettingChange}>
+            <GlobalSettings color="textSubtle" mr="0" mode={SettingsMode.SWAP_LIQUIDITY} />
+          </NotificationDot>
+          <IconButton onClick={onPresentTransactionsModal} variant="text" scale="sm">
+            <HistoryIcon color="textSubtle" width="24px" />
+          </IconButton>
+          <IconButton variant="text" scale="sm" onClick={onRefreshPrice}>
+            <RefreshIcon
+              disabled={!hasAmount}
+              color="textSubtle"
+              width="27px"
+              duration={CHAIN_REFRESH_TIME[chainId] ? CHAIN_REFRESH_TIME[chainId] / 1000 : undefined}
+            />
+          </IconButton>
         </Flex>
-      }
-      subtitle={<Swap.CurrencyInputHeaderSubTitle>{subtitle}</Swap.CurrencyInputHeaderSubTitle>}
-    />
-  )
-}
+      </Flex>
+    )
+
+    return <Swap.CurrencyInputHeader title={titleContent} subtitle={<></>} />
+  },
+)
 
 export default CurrencyInputHeader

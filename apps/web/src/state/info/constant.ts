@@ -2,9 +2,24 @@ import { BLOCKS_CLIENT, BLOCKS_CLIENT_ETH, INFO_CLIENT, INFO_CLIENT_ETH } from '
 import { infoClientETH, infoClient, infoStableSwapClient } from 'utils/graphql'
 
 import { ChainId } from '@pancakeswap/sdk'
-import { ETH_TOKEN_BLACKLIST, PCS_ETH_START, PCS_V2_START, TOKEN_BLACKLIST } from 'config/constants/info'
+import {
+  ETH_TOKEN_BLACKLIST,
+  PCS_ETH_START,
+  PCS_V2_START,
+  TOKEN_BLACKLIST,
+  BSC_TOKEN_WHITELIST,
+  ETH_TOKEN_WHITELIST,
+} from 'config/constants/info'
 
 export type MultiChainName = 'BSC' | 'ETH'
+
+export type MultiChainNameExtend = MultiChainName | 'BSC_TESTNET'
+
+export const multiChainName = {
+  [ChainId.BSC]: 'BSC',
+  [ChainId.ETHEREUM]: 'ETH',
+  [ChainId.BSC_TESTNET]: 'BSC_TESTNET',
+}
 
 export const multiChainQueryMainToken = {
   BSC: 'BNB',
@@ -14,6 +29,7 @@ export const multiChainQueryMainToken = {
 export const multiChainBlocksClient = {
   BSC: BLOCKS_CLIENT,
   ETH: BLOCKS_CLIENT_ETH,
+  BSC_TESTNET: 'https://api.thegraph.com/subgraphs/name/lengocphuc99/bsc_testnet-blocks',
 }
 
 export const multiChainStartTime = {
@@ -49,6 +65,11 @@ export const multiChainScan = {
 export const multiChainTokenBlackList = {
   BSC: TOKEN_BLACKLIST,
   ETH: ETH_TOKEN_BLACKLIST,
+}
+
+export const multiChainTokenWhiteList = {
+  BSC: BSC_TOKEN_WHITELIST,
+  ETH: ETH_TOKEN_WHITELIST,
 }
 
 export const getMultiChainQueryEndPointWithStableSwap = (chainName: MultiChainName) => {

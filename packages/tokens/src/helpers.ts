@@ -6,13 +6,12 @@ import { TokenAddressMap } from '@pancakeswap/token-lists'
  */
 export const EMPTY_LIST: TokenAddressMap<ChainId> = {
   [ChainId.ETHEREUM]: {},
-  [ChainId.RINKEBY]: {},
   [ChainId.GOERLI]: {},
   [ChainId.BSC]: {},
   [ChainId.BSC_TESTNET]: {},
 }
 
-export function serializeTokens(unserializedTokens) {
+export function serializeTokens(unserializedTokens: any) {
   const serializedTokens = Object.keys(unserializedTokens).reduce((accum, key) => {
     return { ...accum, [key]: unserializedTokens[key].serialize }
   }, {} as any)

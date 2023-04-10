@@ -3,7 +3,6 @@
 import { SNAPSHOT_API } from 'config/constants/endpoints'
 import request, { gql } from 'graphql-request'
 import { Proposal, ProposalState, Vote, VoteWhere } from 'state/types'
-import _chunk from 'lodash/chunk'
 
 export const getProposals = async (first = 5, skip = 0, state = ProposalState.ACTIVE): Promise<Proposal[]> => {
   const response: { proposals: Proposal[] } = await request(
@@ -81,7 +80,7 @@ export const getVotes = async (first: number, skip: number, where: VoteWhere): P
 }
 
 // TODO: lazy get all votes when user click load more
-export const getAllVotes = async (proposal: Proposal, votesPerChunk = 30000): Promise<Vote[]> => {
+export const getAllVotes = async (proposal: Proposal, votesPerChunk = 1000): Promise<Vote[]> => {
   const voters = await new Promise<Vote[]>((resolve, reject) => {
     let votes: Vote[] = []
 

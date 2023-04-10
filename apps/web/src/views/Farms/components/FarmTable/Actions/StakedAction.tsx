@@ -14,7 +14,7 @@ import { fetchFarmUserDataAsync } from 'state/farms'
 import { useTransactionAdder, useNonBscFarmPendingTransaction } from 'state/transactions/hooks'
 import { FarmTransactionStatus, NonBscFarmStepType } from 'state/transactions/actions'
 import { pickFarmTransactionTx } from 'state/global/actions'
-import { usePriceCakeBusd } from 'state/farms/hooks'
+import { usePriceCakeUSD, useFarmFromPid } from 'state/farms/hooks'
 import BCakeCalculator from 'views/Farms/components/YieldBooster/components/BCakeCalculator'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import BigNumber from 'bignumber.js'
@@ -24,10 +24,10 @@ import { ChainId, WNATIVE, NATIVE } from '@pancakeswap/sdk'
 import WalletModal, { WalletView } from 'components/Menu/UserMenu/WalletModal'
 import { useAccount } from 'wagmi'
 import { useIsBloctoETH } from 'views/Farms'
+import { FarmWithStakedValue } from '@pancakeswap/farms'
 import useApproveFarm from '../../../hooks/useApproveFarm'
 import useStakeFarms from '../../../hooks/useStakeFarms'
 import useUnstakeFarms from '../../../hooks/useUnstakeFarms'
-import { FarmWithStakedValue } from '../../types'
 import { YieldBoosterStateContext } from '../../YieldBooster/components/ProxyFarmContainer'
 import useProxyStakedActions from '../../YieldBooster/hooks/useProxyStakedActions'
 import { YieldBoosterState } from '../../YieldBooster/hooks/useYieldBoosterState'
@@ -136,8 +136,8 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   const native = useNativeCurrency()
   const pendingFarm = useNonBscFarmPendingTransaction(lpAddress)
   const { boosterState } = useContext(YieldBoosterStateContext)
-  const { isFirstTime } = useFirstTimeCrossFarming(vaultPid)
-
+  const { isFirstTime, refresh: refreshFirstTime } = useFirstTimeCrossFarming(vaultPid)
+  const { lpTokenStakedAmount } = useFarmFromPid(pid)
   const { t } = useTranslation()
   const { toastSuccess } = useToast()
   const addTransaction = useTransactionAdder()
@@ -145,10 +145,10 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   const { fetchWithCatchTxError, fetchTxResponse, loading: pendingTx } = useCatchTxError()
   const { account, chainId } = useActiveWeb3React()
 
-  const { tokenBalance, stakedBalance } = userData || {}
+  const { tokenBalance, stakedBalance, allowance } = userData || {}
 
   const router = useRouter()
-  const cakePrice = usePriceCakeBusd()
+  const cakePrice = usePriceCakeUSD()
   const [bCakeMultiplier, setBCakeMultiplier] = useState<number | null>(() => null)
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
@@ -173,6 +173,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   const handleStake = async (amount: string) => {
     if (vaultPid) {
       await handleNonBscStake(amount)
+      refreshFirstTime()
     } else {
       const receipt = await fetchWithCatchTxError(() => onStake(amount))
 
@@ -296,10 +297,18 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
     <BCakeCalculator
       targetInputBalance={calculatorBalance}
       earningTokenPrice={cakePrice.toNumber()}
-      lpTotalSupply={lpTotalSupply}
+      lpTokenStakedAmount={lpTokenStakedAmount}
       setBCakeMultiplier={setBCakeMultiplier}
     />
   )
+
+  const handleApprove = useCallback(async () => {
+    const receipt = await fetchWithCatchTxError(() => onApprove())
+    if (receipt?.status) {
+      toastSuccess(t('Contract Enabled'), <ToastDescriptionWithTx txHash={receipt.transactionHash} />)
+      onDone()
+    }
+  }, [onApprove, t, toastSuccess, fetchWithCatchTxError, onDone])
 
   const [onPresentDeposit] = useModal(
     <FarmUI.DepositModal
@@ -312,18 +321,24 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
       apr={apr}
       displayApr={displayApr}
       stakedBalance={stakedBalance}
-      onConfirm={handleStake}
       tokenName={lpSymbol}
       multiplier={multiplier}
       addLiquidityUrl={addLiquidityUrl}
       cakePrice={cakePrice}
       showActiveBooster={boosterState === YieldBoosterState.ACTIVE}
       bCakeMultiplier={bCakeMultiplier}
-      bCakeCalculatorSlot={bCakeCalculatorSlot}
       showCrossChainFarmWarning={chainId !== ChainId.BSC && chainId !== ChainId.BSC_TESTNET}
       crossChainWarningText={crossChainWarningText}
       decimals={18}
+      allowance={allowance}
+      enablePendingTx={pendingTx}
+      onConfirm={handleStake}
+      handleApprove={handleApprove}
+      bCakeCalculatorSlot={bCakeCalculatorSlot}
     />,
+    true,
+    true,
+    `farm-deposit-modal-${pid}`,
   )
 
   const [onPresentWithdraw] = useModal(
@@ -331,21 +346,12 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
       showActiveBooster={boosterState === YieldBoosterState.ACTIVE}
       max={stakedBalance}
       onConfirm={handleUnstake}
+      lpPrice={lpTokenPrice}
       tokenName={lpSymbol}
       decimals={18}
       showCrossChainFarmWarning={chainId !== ChainId.BSC && chainId !== ChainId.BSC_TESTNET}
     />,
   )
-
-  const handleApprove = useCallback(async () => {
-    const receipt = await fetchWithCatchTxError(() => {
-      return onApprove()
-    })
-    if (receipt?.status) {
-      toastSuccess(t('Contract Enabled'), <ToastDescriptionWithTx txHash={receipt.transactionHash} />)
-      onDone()
-    }
-  }, [onApprove, t, toastSuccess, fetchWithCatchTxError, onDone])
 
   const [onPresentTransactionModal] = useModal(<WalletModal initialView={WalletView.TRANSACTIONS} />)
 
@@ -368,48 +374,48 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
     )
   }
 
-  if (isApproved) {
-    if (stakedBalance.gt(0)) {
-      return (
-        <FarmUI.FarmTable.StakedActionComponent
-          lpSymbol={lpSymbol}
-          disabledMinusButton={pendingFarm.length > 0}
-          disabledPlusButton={isStakeReady || isBloctoETH}
-          onPresentWithdraw={onPresentWithdraw}
-          onPresentDeposit={onPresentDeposit}
-        >
-          <FarmUI.StakedLP
-            decimals={18}
-            stakedBalance={stakedBalance}
-            quoteTokenSymbol={
-              WNATIVE[chainId]?.symbol === quoteToken.symbol ? NATIVE[chainId]?.symbol : quoteToken.symbol
-            }
-            tokenSymbol={WNATIVE[chainId]?.symbol === token.symbol ? NATIVE[chainId]?.symbol : token.symbol}
-            lpTotalSupply={lpTotalSupply}
-            lpTokenPrice={lpTokenPrice}
-            tokenAmountTotal={tokenAmountTotal}
-            quoteTokenAmountTotal={quoteTokenAmountTotal}
-            pendingFarmLength={pendingFarm.length}
-            onClickLoadingIcon={onClickLoadingIcon}
-          />
-        </FarmUI.FarmTable.StakedActionComponent>
-      )
-    }
-
-    return (
-      <FarmUI.FarmTable.StakeComponent
-        lpSymbol={lpSymbol}
-        isStakeReady={isStakeReady}
-        onPresentDeposit={onPresentDeposit}
-      />
-    )
+  if (!isApproved && stakedBalance.eq(0)) {
+    return <FarmUI.FarmTable.EnableStakeAction pendingTx={pendingTx || isBloctoETH} handleApprove={handleApprove} />
   }
 
   if (!userDataReady) {
     return <FarmUI.FarmTable.StakeActionDataNotReady />
   }
 
-  return <FarmUI.FarmTable.EnableStakeAction pendingTx={pendingTx || isBloctoETH} handleApprove={handleApprove} />
+  if (stakedBalance.gt(0)) {
+    return (
+      <FarmUI.FarmTable.StakedActionComponent
+        lpSymbol={lpSymbol}
+        disabledMinusButton={pendingFarm.length > 0}
+        disabledPlusButton={isStakeReady || isBloctoETH}
+        onPresentWithdraw={onPresentWithdraw}
+        onPresentDeposit={onPresentDeposit}
+      >
+        <FarmUI.StakedLP
+          decimals={18}
+          stakedBalance={stakedBalance}
+          quoteTokenSymbol={
+            WNATIVE[chainId]?.symbol === quoteToken.symbol ? NATIVE[chainId]?.symbol : quoteToken.symbol
+          }
+          tokenSymbol={WNATIVE[chainId]?.symbol === token.symbol ? NATIVE[chainId]?.symbol : token.symbol}
+          lpTotalSupply={lpTotalSupply}
+          lpTokenPrice={lpTokenPrice}
+          tokenAmountTotal={tokenAmountTotal}
+          quoteTokenAmountTotal={quoteTokenAmountTotal}
+          pendingFarmLength={pendingFarm.length}
+          onClickLoadingIcon={onClickLoadingIcon}
+        />
+      </FarmUI.FarmTable.StakedActionComponent>
+    )
+  }
+
+  return (
+    <FarmUI.FarmTable.StakeComponent
+      lpSymbol={lpSymbol}
+      isStakeReady={isStakeReady}
+      onPresentDeposit={onPresentDeposit}
+    />
+  )
 }
 
 export default Staked

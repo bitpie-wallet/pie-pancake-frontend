@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import Split, { SplitInstance } from 'split-grid'
-import { Button, ChartIcon, Flex, Box } from '@pancakeswap/uikit'
+import { Button, ChartIcon, Flex, Box, Link } from '@pancakeswap/uikit'
 import debounce from 'lodash/debounce'
 import delay from 'lodash/delay'
 import useLocalDispatch from 'contexts/LocalRedux/useLocalDispatch'
@@ -107,10 +107,10 @@ const Gutter = styled.div<{ isChartPaneOpen?: boolean }>`
   }
 `
 
-const PowerLinkStyle = styled.div`
+const PowerLinkStyle = styled(Link)`
   position: absolute;
   right: 16px;
-  top: -40px;
+  top: -60px;
 `
 
 const Desktop: React.FC<React.PropsWithChildren> = () => {
@@ -209,8 +209,8 @@ const Desktop: React.FC<React.PropsWithChildren> = () => {
               openChartPane()
             }}
           >
-            <PowerLinkStyle>
-              <img src="/images/powered-by-chainlink.png" alt="Powered by ChainLink" width="170px" height="48px" />
+            <PowerLinkStyle href="https://chain.link/" external>
+              <img src="/images/powered-by-chainlink.svg" alt="Powered by ChainLink" width="170px" height="48px" />
             </PowerLinkStyle>
             <ExpandButtonGroup>
               <TabToggle

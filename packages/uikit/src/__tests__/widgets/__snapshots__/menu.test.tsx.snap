@@ -1,22 +1,24 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`renders correctly 1`] = `
 <DocumentFragment>
-  .c5 {
+  .c6 {
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-text);
+  color: var(--colors-text);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
 }
 
-.c18 {
+.c19 {
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-textSubtle);
+  color: var(--colors-textSubtle);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -27,6 +29,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-text);
+  color: var(--colors-text);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -38,13 +41,14 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-textSubtle);
+  color: var(--colors-textSubtle);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
   margin-right: 0.5rem;
 }
 
-.c15 {
+.c16 {
   color: var(--colors-failure);
   font-weight: 400;
   line-height: 1.5;
@@ -52,7 +56,7 @@ exports[`renders correctly 1`] = `
   font-size: 14px;
 }
 
-.c19 {
+.c20 {
   color: var(--colors-warning);
   font-weight: 400;
   line-height: 1.5;
@@ -105,8 +109,9 @@ exports[`renders correctly 1`] = `
   box-shadow: none;
 }
 
-.c31:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
-  opacity: 0.65;
+.c31:focus-visible {
+  outline: none;
+  box-shadow: var(--shadows-focus);
 }
 
 .c31:active:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled) {
@@ -165,8 +170,9 @@ exports[`renders correctly 1`] = `
   height: sm;
 }
 
-.c35:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
-  opacity: 0.65;
+.c35:focus-visible {
+  outline: none;
+  box-shadow: var(--shadows-focus);
 }
 
 .c35:active:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled) {
@@ -186,20 +192,20 @@ exports[`renders correctly 1`] = `
   cursor: not-allowed;
 }
 
-.c6 {
+.c7 {
   margin-left: 24px;
 }
 
-.c7 {
+.c8 {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-.c22 {
+.c23 {
   width: 100%;
 }
 
-.c24 {
+.c25 {
   height: 100%;
 }
 
@@ -234,7 +240,18 @@ exports[`renders correctly 1`] = `
   display: flex;
 }
 
-.c23 {
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c24 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -247,17 +264,6 @@ exports[`renders correctly 1`] = `
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: space-between;
-}
-
-.c25 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
 }
 
 .c38 {
@@ -293,7 +299,7 @@ exports[`renders correctly 1`] = `
   justify-content: flex-end;
 }
 
-.c13 {
+.c14 {
   -webkit-align-items: center;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -320,39 +326,39 @@ exports[`renders correctly 1`] = `
   pointer-events: inherit;
 }
 
-.c13:is(button) {
+.c14:is(button) {
   cursor: pointer;
 }
 
-.c13:hover:not(:disabled) {
+.c14:hover:not(:disabled) {
   background-color: var(--colors-tertiary);
 }
 
-.c13:active:not(:disabled) {
+.c14:active:not(:disabled) {
   opacity: 0.85;
   -webkit-transform: translateY(1px);
   -ms-transform: translateY(1px);
   transform: translateY(1px);
 }
 
-.c11:first-child > .c12 {
+.c12:first-child .c13 {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 
-.c11:last-child > .c12 {
+.c12:last-child .c13 {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
 
-.c21 {
+.c22 {
   border-color: var(--colors-cardBorder);
   border-style: solid;
   border-width: 1px 0 0;
   margin: 4px 0;
 }
 
-.c10 {
+.c11 {
   background-color: var(--colors-backgroundAlt);
   border: 1px solid var(--colors-cardBorder);
   border-radius: 16px;
@@ -367,7 +373,7 @@ exports[`renders correctly 1`] = `
   visibility: hidden;
 }
 
-.c16 {
+.c17 {
   border-radius: var(--radii-default);
   padding: 0 8px;
   border: 2px solid;
@@ -377,7 +383,7 @@ exports[`renders correctly 1`] = `
   margin-left: 8px;
 }
 
-.c20 {
+.c21 {
   border-radius: var(--radii-default);
   padding: 0 8px;
   border: 2px solid;
@@ -461,11 +467,11 @@ exports[`renders correctly 1`] = `
   border-radius: 8px;
 }
 
-.c8 {
+.c9 {
   position: relative;
 }
 
-.c9 {
+.c10 {
   position: relative;
   display: -webkit-box;
   display: -webkit-flex;
@@ -484,12 +490,12 @@ exports[`renders correctly 1`] = `
   height: 48px;
 }
 
-.c9:hover {
+.c10:hover {
   background: var(--colors-tertiary);
   border-radius: 16px;
 }
 
-.c14 {
+.c15 {
   position: relative;
   display: -webkit-box;
   display: -webkit-flex;
@@ -508,7 +514,7 @@ exports[`renders correctly 1`] = `
   height: 48px;
 }
 
-.c14:after {
+.c15:after {
   content: "";
   border-radius: 100%;
   background: var(--colors-failure);
@@ -517,12 +523,12 @@ exports[`renders correctly 1`] = `
   margin-left: 12px;
 }
 
-.c14:hover {
+.c15:hover {
   background: var(--colors-tertiary);
   border-radius: 16px;
 }
 
-.c17 {
+.c18 {
   position: relative;
   display: -webkit-box;
   display: -webkit-flex;
@@ -541,7 +547,7 @@ exports[`renders correctly 1`] = `
   height: 48px;
 }
 
-.c17:after {
+.c18:after {
   content: "";
   border-radius: 100%;
   background: var(--colors-warning);
@@ -550,7 +556,7 @@ exports[`renders correctly 1`] = `
   margin-left: 12px;
 }
 
-.c17:hover {
+.c18:hover {
   background: var(--colors-tertiary);
   border-radius: 16px;
 }
@@ -687,32 +693,28 @@ exports[`renders correctly 1`] = `
   scroll-snap-align: start;
 }
 
-.c4 {
+.c5 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
 }
 
-.c4 .mobile-icon {
+.c5 .mobile-icon {
   width: 32px;
 }
 
-.c4 .desktop-icon {
+.c5 .desktop-icon {
   width: 160px;
   display: none;
 }
 
-.c4 .eye {
+.c5 .eye {
   -webkit-animation-delay: 20ms;
   animation-delay: 20ms;
 }
 
-.c4:hover .eye {
+.c5:hover .eye {
   -webkit-transform-origin: center 60%;
   -ms-transform-origin: center 60%;
   transform-origin: center 60%;
@@ -789,14 +791,14 @@ exports[`renders correctly 1`] = `
 }
 
 @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-  .c5 {
+  .c6 {
     -webkit-filter: none !important;
     filter: none !important;
   }
 }
 
 @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
-  .c18 {
+  .c19 {
     -webkit-filter: none !important;
     filter: none !important;
   }
@@ -833,6 +835,26 @@ exports[`renders correctly 1`] = `
 }
 
 @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
+
+}
+
+@media (hover:hover) {
+  .c31:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
+    opacity: 0.65;
+  }
+}
+
+@media (hover:hover) {
+  .c35:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
+    opacity: 0.65;
+  }
+}
+
+@media (hover:hover) {
+
+}
+
+@media (hover:hover) {
 
 }
 
@@ -989,19 +1011,19 @@ exports[`renders correctly 1`] = `
 }
 
 @media screen and (min-width:968px) {
-  .c4 .mobile-icon {
+  .c5 .mobile-icon {
     display: none;
   }
 }
 
 @media screen and (min-width:968px) {
-  .c4 .desktop-icon {
+  .c5 .desktop-icon {
     display: block;
   }
 }
 
 <div
-    class="c0 reset__1c7dnup0 sprinkles_minHeight_auto_xs__pkzlfc1yo sprinkles_minHeight_100vh_md__pkzlfc1zq"
+    class="c0 reset_base__1c7dnup0 sprinkles_minHeight_auto_xs__pkzlfc15c sprinkles_minHeight_100vh_md__pkzlfc16k"
   >
     <div
       class="c1"
@@ -1014,15 +1036,15 @@ exports[`renders correctly 1`] = `
           class="c3"
         >
           <div
-            class="c3"
+            class="c4"
           >
             <a
               aria-label="Pancake home page"
-              class="c4"
+              class="c5"
               href="/"
             >
               <svg
-                class="c5 mobile-icon"
+                class="c6 mobile-icon"
                 color="text"
                 viewBox="0 0 198 199"
                 width="20px"
@@ -1049,7 +1071,7 @@ exports[`renders correctly 1`] = `
                 />
               </svg>
               <svg
-                class="c5 desktop-icon"
+                class="c6 desktop-icon"
                 color="text"
                 viewBox="0 0 1281 199"
                 width="20px"
@@ -1082,22 +1104,22 @@ exports[`renders correctly 1`] = `
             </a>
           </div>
           <div
-            class="reset__1c7dnup0 sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_md__pkzlfc2"
+            class="reset_base__1c7dnup0 sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_md__pkzlfc2"
           >
             <div
-              class="c6 c3"
+              class="c7 c3"
             >
               <div
-                class="c7"
+                class="c8"
               >
                 <div
                   class=""
                 >
                   <div
-                    class="c8"
+                    class="c9"
                   >
                     <a
-                      class="c9"
+                      class="c10"
                       href="/swap"
                     >
                       Trade
@@ -1105,24 +1127,24 @@ exports[`renders correctly 1`] = `
                   </div>
                 </div>
                 <div
-                  class="c10"
+                  class="c11"
                   style="position: fixed; left: 0px; top: 0px;"
                 >
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/swap"
                     >
                       Exchange
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/liquidity"
                     >
                       Liquidity
@@ -1131,16 +1153,16 @@ exports[`renders correctly 1`] = `
                 </div>
               </div>
               <div
-                class="c7"
+                class="c8"
               >
                 <div
                   class=""
                 >
                   <div
-                    class="c8"
+                    class="c9"
                   >
                     <a
-                      class="c9"
+                      class="c10"
                       href="/earn"
                     >
                       Earn
@@ -1148,34 +1170,34 @@ exports[`renders correctly 1`] = `
                   </div>
                 </div>
                 <div
-                  class="c10"
+                  class="c11"
                   style="position: fixed; left: 0px; top: 0px;"
                 >
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/earn"
                     >
                       Earn
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/farms"
                     >
                       Yield Farms
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/pools"
                     >
                       Syrup pools
@@ -1184,16 +1206,16 @@ exports[`renders correctly 1`] = `
                 </div>
               </div>
               <div
-                class="c7"
+                class="c8"
               >
                 <div
                   class=""
                 >
                   <div
-                    class="c8"
+                    class="c9"
                   >
                     <a
-                      class="c14"
+                      class="c15"
                       href="/"
                     >
                       Win
@@ -1201,29 +1223,29 @@ exports[`renders correctly 1`] = `
                   </div>
                 </div>
                 <div
-                  class="c10"
+                  class="c11"
                   style="position: fixed; left: 0px; top: 0px;"
                 >
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       Win
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       Predictions
                       <div
-                        class="c15 c16"
+                        class="c16 c17"
                         color="failure"
                         font-size="14px"
                       >
@@ -1232,10 +1254,10 @@ exports[`renders correctly 1`] = `
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       Lottery
@@ -1244,20 +1266,20 @@ exports[`renders correctly 1`] = `
                 </div>
               </div>
               <div
-                class="c7"
+                class="c8"
               >
                 <div
                   class=""
                 >
                   <div
-                    class="c8"
+                    class="c9"
                   >
                     <a
-                      class="c17"
+                      class="c18"
                       href="/"
                     >
                       <svg
-                        class="c18"
+                        class="c19"
                         color="textSubtle"
                         viewBox="0 0 24 24"
                         width="20px"
@@ -1271,29 +1293,29 @@ exports[`renders correctly 1`] = `
                   </div>
                 </div>
                 <div
-                  class="c10"
+                  class="c11"
                   style="position: fixed; left: 0px; top: 0px;"
                 >
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       Info & Analytics
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       IFO Token Sales
                       <div
-                        class="c19 c20"
+                        class="c20 c21"
                         color="warning"
                         font-size="14px"
                       >
@@ -1302,64 +1324,64 @@ exports[`renders correctly 1`] = `
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <hr
-                      class="c21"
+                      class="c22"
                     />
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       NFT Collectibles
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       Team Leaderboard
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <hr
-                      class="c21"
+                      class="c22"
                     />
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                     >
                       Blog
                     </a>
                   </div>
                   <div
-                    class="c11"
+                    class="c12"
                   >
                     <a
-                      class="c12 c13"
+                      class="c13 c14"
                       href="/"
                       target="_blank"
                     >
                       <div
-                        class="c22 c23"
+                        class="c23 c24"
                         width="100%"
                       >
                         Docs & Guides
                         <svg
-                          class="c18"
+                          class="c19"
                           color="textSubtle"
                           viewBox="0 0 24 24"
                           width="20px"
@@ -1378,11 +1400,11 @@ exports[`renders correctly 1`] = `
           </div>
         </div>
         <div
-          class="c24 c25"
+          class="c25 c4"
           height="100%"
         >
           <div
-            class="reset__1c7dnup0 sprinkles_marginRight_12px_xs__pkzlfc12i sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_lg__pkzlfc3"
+            class="reset_base__1c7dnup0 sprinkles_marginRight_12px_xs__pkzlfclo sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_lg__pkzlfc3"
           >
             <a
               class="c26"
@@ -1399,7 +1421,7 @@ exports[`renders correctly 1`] = `
                 <circle
                   cx="48"
                   cy="48"
-                  fill="url(#paint0_linear_10493)"
+                  fill="#53DEE9"
                   r="48"
                 />
                 <path
@@ -1624,13 +1646,13 @@ exports[`renders correctly 1`] = `
       overflow="hidden"
     >
       <div
-        class="c39 c3 c40 reset__1c7dnup0 sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_sm__pkzlfc1"
+        class="c39 c3 c40 reset_base__1c7dnup0 sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_sm__pkzlfc1"
       >
         <div
-          class="c41 reset__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
+          class="c41 reset_base__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
         >
           <svg
-            class="c5"
+            class="c6"
             color="text"
             viewBox="0 0 24 24"
             width="20px"
@@ -1642,10 +1664,10 @@ exports[`renders correctly 1`] = `
           </svg>
         </div>
         <div
-          class="c42 reset__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
+          class="c42 reset_base__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
         >
           <svg
-            class="c5"
+            class="c6"
             color="text"
             viewBox="0 0 24 24"
             width="20px"
@@ -1663,7 +1685,7 @@ exports[`renders correctly 1`] = `
             class="c46 c47"
           >
             <div
-              class="c8"
+              class="c9"
             >
               <a
                 class="c48"
@@ -1677,7 +1699,7 @@ exports[`renders correctly 1`] = `
             class="c46 c47"
           >
             <div
-              class="c8"
+              class="c9"
             >
               <a
                 class="c48"
@@ -1690,13 +1712,13 @@ exports[`renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="c39 c3 c49 reset__1c7dnup0 sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_sm__pkzlfc1"
+        class="c39 c3 c49 reset_base__1c7dnup0 sprinkles_display_none_xs__pkzlfc10 sprinkles_display_block_sm__pkzlfc1"
       >
         <div
-          class="c41 reset__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
+          class="c41 reset_base__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
         >
           <svg
-            class="c5"
+            class="c6"
             color="text"
             viewBox="0 0 24 24"
             width="20px"
@@ -1708,10 +1730,10 @@ exports[`renders correctly 1`] = `
           </svg>
         </div>
         <div
-          class="c42 reset__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
+          class="c42 reset_base__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
         >
           <svg
-            class="c5"
+            class="c6"
             color="text"
             viewBox="0 0 24 24"
             width="20px"
@@ -1729,7 +1751,7 @@ exports[`renders correctly 1`] = `
             class="c46 c47"
           >
             <div
-              class="c8"
+              class="c9"
             >
               <a
                 class="c48"
@@ -1757,6 +1779,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-text);
+  color: var(--colors-text);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1767,6 +1790,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-textSubtle);
+  color: var(--colors-textSubtle);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1777,6 +1801,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-text);
+  color: var(--colors-text);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1788,6 +1813,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-textSubtle);
+  color: var(--colors-textSubtle);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1799,6 +1825,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-textSubtle);
+  color: var(--colors-textSubtle);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1810,6 +1837,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-backgroundAlt);
+  color: var(--colors-backgroundAlt);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1821,6 +1849,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-warning);
+  color: var(--colors-warning);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1831,6 +1860,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-backgroundAlt);
+  color: var(--colors-backgroundAlt);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -1919,8 +1949,9 @@ exports[`renders correctly 1`] = `
   height: sm;
 }
 
-.c49:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
-  opacity: 0.65;
+.c49:focus-visible {
+  outline: none;
+  box-shadow: var(--shadows-focus);
 }
 
 .c49:active:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled) {
@@ -1977,8 +2008,9 @@ exports[`renders correctly 1`] = `
   box-shadow: none;
 }
 
-.c45:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
-  opacity: 0.65;
+.c45:focus-visible {
+  outline: none;
+  box-shadow: var(--shadows-focus);
 }
 
 .c45:active:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled) {
@@ -2034,8 +2066,9 @@ exports[`renders correctly 1`] = `
   color: var(--colors-invertedContrast);
 }
 
-.c56:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
-  opacity: 0.65;
+.c56:focus-visible {
+  outline: none;
+  box-shadow: var(--shadows-focus);
 }
 
 .c56:active:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled) {
@@ -2551,6 +2584,28 @@ exports[`renders correctly 1`] = `
   }
 }
 
+@media (hover:hover) {
+
+}
+
+@media (hover:hover) {
+  .c49:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
+    opacity: 0.65;
+  }
+}
+
+@media (hover:hover) {
+  .c45:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
+    opacity: 0.65;
+  }
+}
+
+@media (hover:hover) {
+  .c56:hover:not(:disabled):not(.pancake-button--disabled):not(.pancake-button--disabled):not(:active) {
+    opacity: 0.65;
+  }
+}
+
 @media screen and (min-width:370px) {
 
 }
@@ -2815,7 +2870,7 @@ exports[`renders correctly 1`] = `
               color="text"
               data-theme="dark"
               font-size="16px"
-              href="https://medium.com/pancakeswap"
+              href="https://blog.pancakeswap.finance/"
               rel="noreferrer noopener"
               target="_blank"
             >
@@ -3375,24 +3430,25 @@ exports[`renders correctly 1`] = `
           </svg>
         </a>
         <a
-          aria-label="Medium"
+          aria-label="Youtube"
           class="c27 c13"
           color="primary"
           font-size="16px"
-          href="https://medium.com/pancakeswap"
+          href="https://www.youtube.com/@pancakeswap_official"
           rel="noreferrer noopener"
           target="_blank"
         >
           <svg
             class="c21"
             color="textSubtle"
+            fill="none"
             style="cursor: pointer;"
-            viewBox="0 0 24 24"
+            viewBox="0 0 30 30"
             width="20px"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M7.64 6.32c3.116 0 5.641 2.544 5.641 5.68 0 3.137-2.525 5.68-5.64 5.68C4.526 17.68 2 15.136 2 12c0-3.136 2.525-5.68 5.64-5.68zm9.008.333c1.558 0 2.82 2.394 2.82 5.347h.001c0 2.953-1.263 5.347-2.82 5.347-1.558 0-2.82-2.395-2.82-5.347 0-2.952 1.262-5.347 2.82-5.347zm4.36.557c.548 0 .992 2.145.992 4.79s-.444 4.79-.992 4.79-.992-2.145-.992-4.79.444-4.79.992-4.79z"
+              d="M 15 4 C 10.814 4 5.3808594 5.0488281 5.3808594 5.0488281 L 5.3671875 5.0644531 C 3.4606632 5.3693645 2 7.0076245 2 9 L 2 15 L 2 15.001953 L 2 21 L 2 21.001953 A 4 4 0 0 0 5.3769531 24.945312 L 5.3808594 24.951172 C 5.3808594 24.951172 10.814 26.001953 15 26.001953 C 19.186 26.001953 24.619141 24.951172 24.619141 24.951172 L 24.621094 24.949219 A 4 4 0 0 0 28 21.001953 L 28 21 L 28 15.001953 L 28 15 L 28 9 A 4 4 0 0 0 24.623047 5.0546875 L 24.619141 5.0488281 C 24.619141 5.0488281 19.186 4 15 4 z M 12 10.398438 L 20 15 L 12 19.601562 L 12 10.398438 z"
             />
           </svg>
         </a>
@@ -3734,7 +3790,7 @@ exports[`renders correctly 1`] = `
                 <circle
                   cx="48"
                   cy="48"
-                  fill="url(#paint0_linear_10493)"
+                  fill="#53DEE9"
                   r="48"
                 />
                 <path
@@ -3812,6 +3868,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-textSubtle);
+  color: var(--colors-textSubtle);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -3822,6 +3879,7 @@ exports[`renders correctly 1`] = `
   -ms-flex-item-align: center;
   align-self: center;
   fill: var(--colors-secondary);
+  color: var(--colors-secondary);
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -4034,12 +4092,12 @@ html[data-useragent*="TokenPocket_iOS"] .c0 {
   transform: translateY(1px);
 }
 
-.c15:first-child > .c16 {
+.c15:first-child .c16 {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 
-.c15:last-child > .c16 {
+.c15:last-child .c16 {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
@@ -4091,6 +4149,9 @@ html[data-useragent*="TokenPocket_iOS"] .c0 {
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
   position: relative;
 }
 
@@ -4178,6 +4239,22 @@ html[data-useragent*="TokenPocket_iOS"] .c0 {
 }
 
 @supports (-webkit-text-size-adjust:none) and (not (-ms-accelerator:true)) and (not (-moz-appearance:none)) {
+
+}
+
+@media (hover:hover) {
+
+}
+
+@media (hover:hover) {
+
+}
+
+@media (hover:hover) {
+
+}
+
+@media (hover:hover) {
 
 }
 
@@ -4322,7 +4399,7 @@ html[data-useragent*="TokenPocket_iOS"] .c0 {
 }
 
 <div
-    class="reset__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
+    class="reset_base__1c7dnup0 sprinkles_display_block_xs__pkzlfc0 sprinkles_display_none_md__pkzlfc12"
   >
     <div
       class="c0 c1 c2"

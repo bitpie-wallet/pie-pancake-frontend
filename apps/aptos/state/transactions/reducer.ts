@@ -11,7 +11,7 @@ import {
   TransactionType,
 } from './actions'
 
-const now = () => new Date().getTime()
+const now = () => Date.now()
 
 export interface TransactionDetails {
   hash: string
@@ -38,7 +38,7 @@ const reducer = createReducer(initialState, (builder) =>
   builder
     .addCase(
       addTransaction,
-      (transactions, { payload: { chainId, from, hash, approval, summary, translatableSummary, claim, type } }) => {
+      (transactions, { payload: { chainId, from, hash, approval, summary, translatableSummary, type } }) => {
         if (transactions[chainId]?.[hash]) {
           throw Error('Attempted to add existing transaction.')
         }
@@ -76,7 +76,6 @@ const reducer = createReducer(initialState, (builder) =>
 )
 
 const storage = createJSONStorage<TransactionState>(() => localStorage)
-storage.delayInit = true
 
 const transactionsAtom = atomWithStorage('transactions', initialState, storage)
 

@@ -4,7 +4,7 @@ import flatMap from 'lodash/flatMap'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
-import { useUserSingleHopOnly } from 'state/user/singleHop'
+import { useUserSingleHopOnly } from '@pancakeswap/utils/user'
 import {
   BASES_TO_CHECK_TRADES_AGAINST,
   CUSTOM_BASES,
@@ -96,7 +96,7 @@ export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): P
   )
 }
 
-const MAX_HOPS = 3
+const MAX_HOPS = 4
 
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out

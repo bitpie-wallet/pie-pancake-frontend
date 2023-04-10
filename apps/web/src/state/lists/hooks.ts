@@ -1,18 +1,28 @@
 import { ChainId } from '@pancakeswap/sdk'
 import { TokenAddressMap as TTokenAddressMap, WrappedTokenInfo, TokenList, TokenInfo } from '@pancakeswap/token-lists'
 import { ListsState } from '@pancakeswap/token-lists/react'
-import { DEFAULT_LIST_OF_LISTS, OFFICIAL_LISTS, UNSUPPORTED_LIST_URLS, WARNING_LIST_URLS } from 'config/constants/lists'
+import {
+  DEFAULT_LIST_OF_LISTS,
+  OFFICIAL_LISTS,
+  UNSUPPORTED_LIST_URLS,
+  WARNING_LIST_URLS,
+  ETH_URLS,
+  BSC_URLS,
+} from 'config/constants/lists'
 import { atom, useAtomValue } from 'jotai'
 import mapValues from 'lodash/mapValues'
 import groupBy from 'lodash/groupBy'
 import keyBy from 'lodash/keyBy'
+import _pickBy from 'lodash/pickBy'
 import { EMPTY_LIST } from '@pancakeswap/tokens'
 import uniqBy from 'lodash/uniqBy'
 import { useMemo } from 'react'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import DEFAULT_TOKEN_LIST from '../../config/constants/tokenLists/pancake-default.tokenlist.json'
 import UNSUPPORTED_TOKEN_LIST from '../../config/constants/tokenLists/pancake-unsupported.tokenlist.json'
 import WARNING_TOKEN_LIST from '../../config/constants/tokenLists/pancake-warning.tokenlist.json'
 import { listsAtom } from './lists'
+import { isAddress } from '../../utils'
 
 type TokenAddressMap = TTokenAddressMap<ChainId>
 
@@ -44,7 +54,9 @@ const activeListUrlsAtom = atom((get) => {
 
 const combineTokenMapsWithDefault = (lists: ListsState['byUrl'], urls: string[]) => {
   const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST)
+
   if (!urls) return defaultTokenMap
+
   return combineMaps(combineTokenMaps(lists, urls), defaultTokenMap)
 }
 
@@ -94,7 +106,7 @@ export const tokenListFromOfficialsUrlsAtom = atom((get) => {
 
   const mergedTokenLists: TokenInfo[] = OFFICIAL_LISTS.reduce((acc, url) => {
     if (lists?.[url]?.current?.tokens) {
-      acc.push(...lists?.[url]?.current.tokens)
+      acc.push(...(lists?.[url]?.current.tokens || []))
     }
     return acc
   }, [])
@@ -137,10 +149,15 @@ export function listToTokenMap(list: TokenList): TokenAddressMap {
   const result = listCache?.get(list)
   if (result) return result
 
-  const tokenMap: WrappedTokenInfo[] = uniqBy(
-    list.tokens,
-    (tokenInfo) => `${tokenInfo.chainId}#${tokenInfo.address}`,
-  ).map((tokenInfo) => new WrappedTokenInfo(tokenInfo))
+  const tokenMap: WrappedTokenInfo[] = uniqBy(list.tokens, (tokenInfo) => `${tokenInfo.chainId}#${tokenInfo.address}`)
+    .map((tokenInfo) => {
+      const checksummedAddress = isAddress(tokenInfo.address)
+      if (checksummedAddress) {
+        return new WrappedTokenInfo({ ...tokenInfo, address: checksummedAddress })
+      }
+      return null
+    })
+    .filter(Boolean)
 
   const groupedTokenMap: { [chainId: string]: WrappedTokenInfo[] } = groupBy(tokenMap, 'chainId')
 
@@ -172,13 +189,25 @@ export function useAllLists(): {
     readonly error: string | null
   }
 } {
-  return useAtomValue(selectorByUrlsAtom)
+  const { chainId } = useActiveChainId()
+
+  const urls = useAtomValue(selectorByUrlsAtom)
+
+  return useMemo(
+    () =>
+      _pickBy(
+        urls,
+        (_, url) =>
+          (chainId === ChainId.ETHEREUM && ETH_URLS.includes(url)) ||
+          (chainId === ChainId.BSC && BSC_URLS.includes(url)),
+      ),
+    [chainId, urls],
+  )
 }
 
 function combineMaps(map1: TokenAddressMap, map2: TokenAddressMap): TokenAddressMap {
   return {
     [ChainId.ETHEREUM]: { ...map1[ChainId.ETHEREUM], ...map2[ChainId.ETHEREUM] },
-    [ChainId.RINKEBY]: { ...map1[ChainId.RINKEBY], ...map2[ChainId.RINKEBY] },
     [ChainId.GOERLI]: { ...map1[ChainId.GOERLI], ...map2[ChainId.GOERLI] },
     [ChainId.BSC]: { ...map1[ChainId.BSC], ...map2[ChainId.BSC] },
     [ChainId.BSC_TESTNET]: { ...map1[ChainId.BSC_TESTNET], ...map2[ChainId.BSC_TESTNET] },
@@ -187,7 +216,18 @@ function combineMaps(map1: TokenAddressMap, map2: TokenAddressMap): TokenAddress
 
 // filter out unsupported lists
 export function useActiveListUrls(): string[] | undefined {
-  return useAtomValue(activeListUrlsAtom)
+  const { chainId } = useActiveChainId()
+  const urls = useAtomValue(activeListUrlsAtom)
+
+  return useMemo(
+    () =>
+      urls.filter(
+        (url) =>
+          (chainId === ChainId.ETHEREUM && ETH_URLS.includes(url)) ||
+          (chainId === ChainId.BSC && BSC_URLS.includes(url)),
+      ),
+    [urls, chainId],
+  )
 }
 
 export function useInactiveListUrls() {

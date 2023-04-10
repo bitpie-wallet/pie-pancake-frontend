@@ -2,11 +2,11 @@ import { useTranslation } from '@pancakeswap/localization'
 import { Flex, Skeleton, Text } from '@pancakeswap/uikit'
 import { ConnectWalletButton } from 'components/ConnectWalletButton'
 import styled from 'styled-components'
+import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { HarvestActionContainer } from '../FarmTable/Actions/HarvestAction'
 import { StakedContainer } from '../FarmTable/Actions/StakedAction'
 import HarvestAction from './HarvestAction'
 import StakeAction from './StakeAction'
-import { FarmWithStakedValue } from '../types'
 
 const Action = styled.div`
   padding-top: 16px;
@@ -47,7 +47,7 @@ const CardActions: React.FC<React.PropsWithChildren<FarmCardActionsProps>> = ({
       </HarvestActionContainer>
       {isReady ? (
         <Flex>
-          <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
+          <Text bold color="secondary" fontSize="12px" pr="4px">
             {farm.lpSymbol}
           </Text>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">

@@ -9,10 +9,10 @@ export function calcPendingRewardCake(userAmount, userRewardDebt, accCakePerShar
   return new BigNumber(userAmount).times(accCakePerShare).dividedBy(ACC_CAKE_PRECISION).minus(userRewardDebt)
 }
 
-export function calcRewardCakePerShare(masterChef: MapFarmResource, pid: string | number) {
+export function calcRewardCakePerShare(masterChef: MapFarmResource, pid: string | number, getNow: () => number) {
   const poolInfo: FarmResourcePoolInfo = masterChef.pool_info[pid]
-  const currentTimestamp = new Date().getTime() / 1000
-  const lastRewardTimestamp = Number(poolInfo.last_reward_timestamp)
+  const currentTimestamp = getNow() / 1000
+  const lastRewardTimestamp = Number(poolInfo?.last_reward_timestamp)
   const endTimestamp = Number(masterChef.end_timestamp)
   const lastUpkeepTimestamp = Number(masterChef.last_upkeep_timestamp)
 

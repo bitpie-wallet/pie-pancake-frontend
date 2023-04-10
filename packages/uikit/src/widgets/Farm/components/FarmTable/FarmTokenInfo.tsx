@@ -1,10 +1,8 @@
 import styled from "styled-components";
 import { useTranslation } from "@pancakeswap/localization";
-import { getBalanceNumber } from "@pancakeswap/utils/formatBalance";
 import { Text } from "../../../../components/Text";
 import { Skeleton } from "../../../../components/Skeleton";
 import { Flex } from "../../../../components/Box";
-import Tags from "../Tags";
 import { FarmTableFarmTokenInfoProps } from "../../types";
 
 const Container = styled.div`
@@ -29,15 +27,13 @@ const TokenWrapper = styled.div`
 const Farm: React.FunctionComponent<React.PropsWithChildren<FarmTableFarmTokenInfoProps>> = ({
   label,
   isReady,
-  isStable,
-  stakedBalance,
+  isStaking,
   children,
 }) => {
   const { t } = useTranslation();
-  const rawStakedBalance = stakedBalance ? getBalanceNumber(stakedBalance) : 0;
 
   const handleRenderFarming = (): JSX.Element => {
-    if (rawStakedBalance) {
+    if (isStaking) {
       return (
         <Text color="secondary" fontSize="12px" bold textTransform="uppercase">
           {t("Farming")}
@@ -69,14 +65,7 @@ const Farm: React.FunctionComponent<React.PropsWithChildren<FarmTableFarmTokenIn
     </Container>
   );
 
-  return isStable ? (
-    <Flex flexDirection="column">
-      {pairContainer}
-      <Tags.StableFarmTag mt="4px" />
-    </Flex>
-  ) : (
-    pairContainer
-  );
+  return <Flex flexDirection="column">{pairContainer}</Flex>;
 };
 
 export default Farm;

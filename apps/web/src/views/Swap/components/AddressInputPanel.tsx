@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 import styled from 'styled-components'
-import { Text, Link } from '@pancakeswap/uikit'
+import { ChainId } from '@pancakeswap/sdk'
+import { Text, Link, BscScanIcon, AutoColumn } from '@pancakeswap/uikit'
 import { isAddress } from 'utils'
 import { useTranslation } from '@pancakeswap/localization'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { AutoColumn } from '../../../components/Layout/Column'
 import { RowBetween } from '../../../components/Layout/Row'
 import { getBlockExploreLink, getBlockExploreName } from '../../../utils'
 
@@ -107,7 +107,7 @@ export default function AddressInputPanel({
                   {t('View on %site%', {
                     site: getBlockExploreName(chainId),
                   })}
-                  )
+                  {chainId === ChainId.BSC && <BscScanIcon color="primary" ml="4px" />})
                 </Link>
               )}
             </RowBetween>

@@ -132,3 +132,19 @@ export const getCrossFarmingSenderAddress = (chainId?: number) => {
 export const getCrossFarmingReceiverAddress = (chainId?: number) => {
   return getAddress(addresses.crossFarmingReceiver, chainId)
 }
+
+export const getMMLinkedPoolAddress = (chainId?: number) => {
+  return getAddress(addresses.mmLinkedPool, chainId)
+}
+
+export const getStableSwapNativeHelperAddress = (chainId?: number) => {
+  return getAddress(addresses.stableSwapNativeHelper, chainId)
+}
+
+export const getMasterChefV3Address = (chainId?: number) => {
+  return getAddress(addresses.masterChefV3, chainId)
+}
+
+export const getV3MigratorAddress = (chainId?: number) => {
+  return getAddress(addresses.v3Migrator, chainId)
+}

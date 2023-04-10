@@ -1,47 +1,51 @@
-import { useCallback, useEffect, useState, useContext } from 'react'
-import styled from 'styled-components'
 import { Currency, CurrencyAmount, Percent } from '@pancakeswap/sdk'
 import {
-  Text,
   ArrowDownIcon,
-  Box,
-  IconButton,
   ArrowUpDownIcon,
-  Skeleton,
+  AutoColumn,
+  Box,
   Flex,
+  IconButton,
   Message,
   MessageText,
+  PencilIcon,
+  Skeleton,
   Swap as SwapUI,
+  Text,
+  useModal,
 } from '@pancakeswap/uikit'
 import InfoTooltip from '@pancakeswap/uikit/src/components/Timeline/InfoTooltip'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import styled from 'styled-components'
 
 import { useTranslation } from '@pancakeswap/localization'
-import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
+import { maxAmountSpend } from 'utils/maxAmountSpend'
 
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
-import { CommonBasesType } from 'components/SearchModal/types'
 import { AutoRow, RowBetween } from 'components/Layout/Row'
-import { AutoColumn } from 'components/Layout/Column'
 
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
 
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
-import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
+import { useUserSlippage, useExpertMode } from '@pancakeswap/utils/user'
 
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import { currencyId } from 'utils/currencyId'
 
+import { useStableSwapPairs } from 'state/swap/useStableSwapPairs'
 import { useAccount } from 'wagmi'
+import SettingsModal from '../../../../components/Menu/GlobalSettings/SettingsModal'
+import { SettingsMode } from '../../../../components/Menu/GlobalSettings/types'
 import CurrencyInputHeader from '../../components/CurrencyInputHeader'
-import useRefreshBlockNumberID from '../../hooks/useRefreshBlockNumber'
 import { Wrapper } from '../../components/styleds'
-import StableSwapCommitButton from './StableSwapCommitButton'
-import { useDerivedStableSwapInfo } from '../hooks/useDerivedStableSwapInfo'
+import useRefreshBlockNumberID from '../../hooks/useRefreshBlockNumber'
 import useApproveCallbackFromStableTrade from '../hooks/useApproveCallbackFromStableTrade'
+import { useDerivedStableSwapInfo } from '../hooks/useDerivedStableSwapInfo'
 import { StableConfigContext } from '../hooks/useStableConfig'
+import StableSwapCommitButton from './StableSwapCommitButton'
 
 const Label = styled(Text)`
   font-size: 12px;
@@ -71,12 +75,24 @@ export default function StableSwapForm() {
   const { t } = useTranslation()
   const { refreshBlockNumber, isLoading } = useRefreshBlockNumberID()
   const { address: account } = useAccount()
+  const stablePairs = useStableSwapPairs()
+  const stableTokens = useMemo(() => {
+    return stablePairs.reduce((tokens, farm) => {
+      if (!tokens.find((token) => farm.token0.wrapped.address === token.address)) {
+        tokens.push(farm.token0)
+      }
+      if (!tokens.find((token) => farm.token1.wrapped.address === token.address)) {
+        tokens.push(farm.token1)
+      }
+      return tokens
+    }, [])
+  }, [stablePairs])
 
   // for expert mode
-  const [isExpertMode] = useExpertModeManager()
+  const [isExpertMode] = useExpertMode()
 
   // get custom setting values for user
-  const [allowedSlippage] = useUserSlippageTolerance()
+  const [allowedSlippage] = useUserSlippage()
 
   // swap state & price data
   const {
@@ -88,7 +104,7 @@ export default function StableSwapForm() {
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
 
-  const stableConfig = useContext(StableConfigContext)
+  const { stableSwapConfig } = useContext(StableConfigContext)
 
   const currencies: { [field in Field]?: Currency } = {
     [Field.INPUT]: inputCurrency ?? undefined,
@@ -133,7 +149,7 @@ export default function StableSwapForm() {
   const [approval, approveCallback] = useApproveCallbackFromStableTrade({
     trade,
     allowedSlippage,
-    swapAddress: stableConfig.stableSwapConfig?.stableSwapAddress,
+    swapAddress: stableSwapConfig?.stableSwapAddress,
   })
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
@@ -147,7 +163,6 @@ export default function StableSwapForm() {
   }, [approval, approvalSubmitted])
 
   const maxAmountInput: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
-  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   const handleInputSelect = useCallback(
     (newCurrencyInput) => {
@@ -192,6 +207,8 @@ export default function StableSwapForm() {
     [maxAmountInput, onUserInput],
   )
 
+  const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
+
   const hasAmount = Boolean(parsedAmount)
 
   const onRefreshPrice = useCallback(() => {
@@ -219,10 +236,10 @@ export default function StableSwapForm() {
       <Wrapper id="swap-page" style={{ minHeight: '412px' }}>
         <AutoColumn gap="sm">
           <CurrencyInputPanel
-            disableCurrencySelect
             label={independentField === Field.OUTPUT && trade ? t('From (estimated)') : t('From')}
             value={formattedAmounts[Field.INPUT]}
-            showMaxButton={!atMaxAmountInput}
+            showMaxButton
+            maxAmount={maxAmountInput}
             showQuickInputButton
             currency={currencies[Field.INPUT]}
             onUserInput={handleTypeInput}
@@ -231,8 +248,9 @@ export default function StableSwapForm() {
             onCurrencySelect={handleInputSelect}
             otherCurrency={currencies[Field.OUTPUT]}
             id="swap-currency-input"
-            showCommonBases
-            commonBasesType={CommonBasesType.SWAP_LIMITORDER}
+            showCommonBases={false}
+            showSearchInput={false}
+            tokensToShow={stableTokens}
           />
 
           <AutoColumn justify="space-between">
@@ -257,7 +275,6 @@ export default function StableSwapForm() {
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            disableCurrencySelect
             value={formattedAmounts[Field.OUTPUT]}
             onUserInput={handleTypeOutput}
             label={independentField === Field.INPUT && trade ? t('To (estimated)') : t('To')}
@@ -266,11 +283,12 @@ export default function StableSwapForm() {
             onCurrencySelect={handleOutputSelect}
             otherCurrency={currencies[Field.INPUT]}
             id="swap-currency-output"
-            showCommonBases
-            commonBasesType={CommonBasesType.SWAP_LIMITORDER}
+            showCommonBases={false}
+            showSearchInput={false}
+            tokensToShow={stableTokens}
           />
 
-          <AutoColumn gap="7px" style={{ padding: '0 16px' }}>
+          <AutoColumn gap="sm" style={{ padding: '0 16px' }}>
             <RowBetween align="center">
               {Boolean(trade) && (
                 <>
@@ -284,16 +302,28 @@ export default function StableSwapForm() {
               )}
             </RowBetween>
             <RowBetween align="center">
-              <Label>{t('Slippage Tolerance')}</Label>
+              <Label>
+                {t('Slippage Tolerance')}
+                <IconButton scale="sm" variant="text" onClick={onPresentSettingsModal}>
+                  <PencilIcon color="primary" width="10px" />
+                </IconButton>
+              </Label>
               <Text bold color="primary">
                 {allowedSlippage / 100}%
               </Text>
             </RowBetween>
           </AutoColumn>
-          {typedValue ? null : (
+          {typedValue ? null : stableSwapConfig ? (
             <AutoColumn>
               <Message variant="warning" mb="16px">
                 <MessageText>{t('Trade stablecoins in StableSwap with lower slippage and trading fees!')}</MessageText>
+              </Message>
+            </AutoColumn>
+          ) : null}
+          {stableSwapConfig ? null : (
+            <AutoColumn>
+              <Message variant="warning" mb="16px">
+                <MessageText>{t('Stable pair not found use Swap')}</MessageText>
               </Message>
             </AutoColumn>
           )}

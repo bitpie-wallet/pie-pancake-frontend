@@ -132,9 +132,14 @@ export default function ManageTokens({
             <Link external href={getBlockExploreLink(token.address, 'token', chainId)} color="textSubtle" ml="10px">
               {token.symbol}
             </Link>
-            <Text color="textSubtle" fontSize="14px" ml="8px">
+            <Text color="textSubtle" fontSize="14px" ml="8px" mr="3px">
               {token.name}
             </Text>
+            <a href={getBlockExploreLink(token.address, 'token', chainId)} target="_blank" rel="noreferrer noopener">
+              <IconButton scale="sm" variant="text">
+                <AptosIcon color="textSubtle" width="16px" />
+              </IconButton>
+            </a>
           </RowFixed>
           <RowFixed>
             <CoinRegisterButtonWithHooks token={token} />
@@ -150,11 +155,6 @@ export default function ManageTokens({
             >
               <DeleteOutlineIcon color="textSubtle" />
             </IconButton>
-            <a href={getBlockExploreLink(token.address, 'token', chainId)} target="_blank" rel="noreferrer noopener">
-              <IconButton scale="sm" variant="text">
-                <AptosIcon color="textSubtle" width="16px" />
-              </IconButton>
-            </a>
           </RowFixed>
         </RowBetween>
       ))
@@ -199,11 +199,11 @@ export default function ManageTokens({
             />
           )}
         </AutoColumn>
-        <AutoColumn gap="2">{tokenList}</AutoColumn>
+        <AutoColumn gap="8px">{tokenList}</AutoColumn>
         {Boolean(discoverRegisterTokens.length) && (
           <>
             <Text color="textSubtle">{t('Discovered from registered coins')}</Text>
-            <AutoColumn gap="2">
+            <AutoColumn gap="8px">
               {discoverRegisterTokens.map((discoveredToken) => (
                 <RowBetween key={discoveredToken.address} width="100%">
                   <RowFixed>

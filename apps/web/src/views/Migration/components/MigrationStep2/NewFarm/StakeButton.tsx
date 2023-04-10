@@ -17,10 +17,10 @@ import { useERC20 } from 'hooks/useContract'
 import React, { useCallback, useState } from 'react'
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
-import { useFarmUser, usePriceCakeBusd } from 'state/farms/hooks'
+import { useFarmUser, usePriceCakeUSD, useFarmFromPid } from 'state/farms/hooks'
 import styled from 'styled-components'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
-import { FarmWithStakedValue } from 'views/Farms/components/types'
+import { FarmWithStakedValue } from '@pancakeswap/farms'
 import useApproveFarm from 'views/Farms/hooks/useApproveFarm'
 import useStakeFarms from 'views/Farms/hooks/useStakeFarms'
 import useUnstakeFarms from 'views/Farms/hooks/useUnstakeFarms'
@@ -58,7 +58,8 @@ const StakeButton: React.FC<React.PropsWithChildren<StackedActionProps>> = ({
   const { allowance, tokenBalance, stakedBalance } = useFarmUser(pid)
   const { onStake } = useStakeFarms(stakedPid)
   const { onUnstake } = useUnstakeFarms(stakedPid)
-  const cakePrice = usePriceCakeBusd()
+  const cakePrice = usePriceCakeUSD()
+  const { lpTokenStakedAmount } = useFarmFromPid(pid)
   const [bCakeMultiplier, setBCakeMultiplier] = useState<number | null>(() => null)
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
@@ -104,7 +105,7 @@ const StakeButton: React.FC<React.PropsWithChildren<StackedActionProps>> = ({
     <BCakeCalculator
       targetInputBalance={calculatorBalance}
       earningTokenPrice={cakePrice.toNumber()}
-      lpTotalSupply={lpTotalSupply}
+      lpTokenStakedAmount={lpTokenStakedAmount}
       setBCakeMultiplier={setBCakeMultiplier}
     />
   )

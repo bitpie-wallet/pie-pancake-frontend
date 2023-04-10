@@ -1,22 +1,21 @@
 /* eslint-disable no-restricted-syntax */
 import { Currency, Token } from '@pancakeswap/sdk'
-import { Box, Input, Text, useMatchBreakpoints } from '@pancakeswap/uikit'
+import { Box, Input, Text, useMatchBreakpoints, AutoColumn, Column } from '@pancakeswap/uikit'
 import { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { useTranslation } from '@pancakeswap/localization'
-import { useDebounce } from '@pancakeswap/hooks'
+import { useDebounce, useSortedTokensByQuery } from '@pancakeswap/hooks'
+import { createFilterToken } from '@pancakeswap/utils/filtering'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { FixedSizeList } from 'react-window'
 import { useAllLists, useInactiveListUrls } from 'state/lists/hooks'
 import { WrappedTokenInfo } from '@pancakeswap/token-lists'
-import { useAudioModeManager } from 'state/user/hooks'
+import { useAudioPlay } from '@pancakeswap/utils/user'
 import { isAddress } from 'utils'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useAllTokens, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
-import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
-import { createFilterToken, useSortedTokensByQuery } from './filtering'
 import useTokenComparator from './sorting'
 import { getSwapSound } from './swapSound'
 
@@ -26,11 +25,13 @@ interface CurrencySearchProps {
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
+  showSearchInput?: boolean
   showCommonBases?: boolean
   commonBasesType?: string
   showImportView: () => void
   setImportToken: (token: Token) => void
   height?: number
+  tokensToShow?: Token[]
 }
 
 function useSearchInactiveTokenLists(search: string | undefined, minResults = 10): WrappedTokenInfo[] {
@@ -40,13 +41,13 @@ function useSearchInactiveTokenLists(search: string | undefined, minResults = 10
   const activeTokens = useAllTokens()
   return useMemo(() => {
     if (!search || search.trim().length === 0) return []
-    const filterToken = createFilterToken(search)
+    const filterToken = createFilterToken(search, (address) => Boolean(isAddress(address)))
     const exactMatches: WrappedTokenInfo[] = []
     const rest: WrappedTokenInfo[] = []
     const addressSet: { [address: string]: true } = {}
     const trimmedSearchQuery = search.toLowerCase().trim()
     for (const url of inactiveUrls) {
-      const list = lists[url].current
+      const list = lists[url]?.current
       // eslint-disable-next-line no-continue
       if (!list) continue
       for (const tokenInfo of list.tokens) {
@@ -56,7 +57,10 @@ function useSearchInactiveTokenLists(search: string | undefined, minResults = 10
           !addressSet[tokenInfo.address] &&
           filterToken(tokenInfo)
         ) {
-          const wrapped: WrappedTokenInfo = new WrappedTokenInfo(tokenInfo)
+          const wrapped: WrappedTokenInfo = new WrappedTokenInfo({
+            ...tokenInfo,
+            address: isAddress(tokenInfo.address) || tokenInfo.address,
+          })
           addressSet[wrapped.address] = true
           if (
             tokenInfo.name?.toLowerCase() === trimmedSearchQuery ||
@@ -79,9 +83,11 @@ function CurrencySearch({
   otherSelectedCurrency,
   showCommonBases,
   commonBasesType,
+  showSearchInput = true,
   showImportView,
   setImportToken,
   height,
+  tokensToShow,
 }: CurrencySearchProps) {
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
@@ -101,19 +107,20 @@ function CurrencySearch({
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
 
   const { isMobile } = useMatchBreakpoints()
-  const [audioPlay] = useAudioModeManager()
+  const [audioPlay] = useAudioPlay()
 
   const native = useNativeCurrency()
 
   const showNative: boolean = useMemo(() => {
+    if (tokensToShow) return false
     const s = debouncedQuery.toLowerCase().trim()
     return native && native.symbol?.toLowerCase?.()?.indexOf(s) !== -1
-  }, [debouncedQuery, native])
+  }, [debouncedQuery, native, tokensToShow])
 
   const filteredTokens: Token[] = useMemo(() => {
-    const filterToken = createFilterToken(debouncedQuery)
-    return Object.values(allTokens).filter(filterToken)
-  }, [allTokens, debouncedQuery])
+    const filterToken = createFilterToken(debouncedQuery, (address) => Boolean(isAddress(address)))
+    return Object.values(tokensToShow || allTokens).filter(filterToken)
+  }, [tokensToShow, allTokens, debouncedQuery])
 
   const filteredQueryTokens = useSortedTokensByQuery(filteredTokens, debouncedQuery)
 
@@ -137,7 +144,7 @@ function CurrencySearch({
   const inputRef = useRef<HTMLInputElement>()
 
   useEffect(() => {
-    if (!isMobile) inputRef.current.focus()
+    if (!isMobile) inputRef.current?.focus()
   }, [isMobile])
 
   const handleInput = useCallback((event) => {
@@ -231,18 +238,20 @@ function CurrencySearch({
   return (
     <>
       <AutoColumn gap="16px">
-        <Row>
-          <Input
-            id="token-search-input"
-            placeholder={t('Search name or paste address')}
-            scale="lg"
-            autoComplete="off"
-            value={searchQuery}
-            ref={inputRef as RefObject<HTMLInputElement>}
-            onChange={handleInput}
-            onKeyDown={handleEnter}
-          />
-        </Row>
+        {showSearchInput && (
+          <Row>
+            <Input
+              id="token-search-input"
+              placeholder={t('Search name or paste address')}
+              scale="lg"
+              autoComplete="off"
+              value={searchQuery}
+              ref={inputRef as RefObject<HTMLInputElement>}
+              onChange={handleInput}
+              onKeyDown={handleEnter}
+            />
+          </Row>
+        )}
         {showCommonBases && (
           <CommonBases
             chainId={chainId}

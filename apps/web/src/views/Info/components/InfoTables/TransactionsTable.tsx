@@ -14,6 +14,7 @@ import { getBlockExploreLink } from 'utils'
 
 import { formatAmount } from 'utils/formatInfoNumbers'
 import { Arrow, Break, ClickableColumnHeader, PageButtons, TableWrapper } from './shared'
+import { useSidNameForAddress } from '../../../../hooks/useSid'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -102,9 +103,11 @@ const DataRow: React.FC<React.PropsWithChildren<{ transaction: Transaction }>> =
   const outputTokenSymbol = transaction.amountToken0 < 0 ? transaction.token0Symbol : transaction.token1Symbol
   const inputTokenSymbol = transaction.amountToken1 < 0 ? transaction.token0Symbol : transaction.token1Symbol
   const chainName = useGetChainName()
+  const { sidName } = useSidNameForAddress(transaction.sender)
   return (
     <ResponsiveGrid>
       <LinkExternal
+        isBscScan
         href={getBlockExploreLink(transaction.hash, 'transaction', chainName === 'ETH' && ChainId.ETHEREUM)}
       >
         <Text>
@@ -122,8 +125,11 @@ const DataRow: React.FC<React.PropsWithChildren<{ transaction: Transaction }>> =
       <Text>
         <Text>{`${formatAmount(abs1)} ${transaction.token1Symbol}`}</Text>
       </Text>
-      <LinkExternal href={getBlockExploreLink(transaction.sender, 'address', chainName === 'ETH' && ChainId.ETHEREUM)}>
-        {truncateHash(transaction.sender)}
+      <LinkExternal
+        isBscScan
+        href={getBlockExploreLink(transaction.sender, 'address', chainName === 'ETH' && ChainId.ETHEREUM)}
+      >
+        {sidName || truncateHash(transaction.sender)}
       </LinkExternal>
       <Text>{formatDistanceToNowStrict(parseInt(transaction.timestamp, 10) * 1000)}</Text>
     </ResponsiveGrid>

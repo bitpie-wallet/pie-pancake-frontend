@@ -1,28 +1,31 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { Button, Text, useModal } from '@pancakeswap/uikit'
 import { Currency, CurrencyAmount, Trade, TradeType } from '@pancakeswap/sdk'
+import { Button, Column, Text, confirmPriceImpactWithoutFee, useModal } from '@pancakeswap/uikit'
 
+import { useUserSingleHopOnly } from '@pancakeswap/utils/user'
 import { GreyCard } from 'components/Card'
 import { CommitButton } from 'components/CommitButton'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { WrapType } from 'hooks/useWrapCallback'
 import { AutoRow, RowBetween } from 'components/Layout/Row'
-import { ApprovalState } from 'hooks/useApproveCallback'
 import CircleLoader from 'components/Loader/CircleLoader'
-import { Field } from 'state/swap/actions'
 import SettingsModal, { withCustomOnDismiss } from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
-import { useCallback, useEffect, useState } from 'react'
-import Column from 'components/Layout/Column'
-import { useUserSingleHopOnly } from 'state/user/hooks'
-import { BIG_INT_ZERO } from 'config/constants/exchange'
-import { computeTradePriceBreakdown, warningSeverity } from 'utils/exchange'
-import { useSwapCallback } from 'hooks/useSwapCallback'
+import {
+  ALLOWED_PRICE_IMPACT_HIGH,
+  BIG_INT_ZERO,
+  PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
+} from 'config/constants/exchange'
+import { ApprovalState } from 'hooks/useApproveCallback'
 import { useSwapCallArguments } from 'hooks/useSwapCallArguments'
+import { useSwapCallback } from 'hooks/useSwapCallback'
+import { WrapType } from 'hooks/useWrapCallback'
+import { useCallback, useEffect, useState } from 'react'
+import { Field } from 'state/swap/actions'
+import { logGTMClickSwapEvent } from 'utils/customGTMEventTracking'
+import { computeTradePriceBreakdown, warningSeverity } from 'utils/exchange'
 
 import ConfirmSwapModal from './ConfirmSwapModal'
 import ProgressSteps from './ProgressSteps'
-import confirmPriceImpactWithoutFee from './confirmPriceImpactWithoutFee'
 import { SwapCallbackError } from './styleds'
 
 const SettingsModalWithCustomDismiss = withCustomOnDismiss(SettingsModal)
@@ -101,7 +104,15 @@ export default function SwapCommitButton({
 
   // Handlers
   const handleSwap = useCallback(() => {
-    if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee, t)) {
+    if (
+      priceImpactWithoutFee &&
+      !confirmPriceImpactWithoutFee(
+        priceImpactWithoutFee,
+        PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
+        ALLOWED_PRICE_IMPACT_HIGH,
+        t,
+      )
+    ) {
       return
     }
     if (!swapCallback) {
@@ -179,6 +190,7 @@ export default function SwapCommitButton({
       })
       onPresentConfirmModal()
     }
+    logGTMClickSwapEvent()
   }, [isExpertMode, handleSwap, onPresentConfirmModal, trade])
 
   // useEffect

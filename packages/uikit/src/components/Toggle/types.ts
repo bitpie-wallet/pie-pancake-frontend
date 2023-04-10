@@ -7,7 +7,7 @@ export const scales = {
   LG: "lg",
 } as const;
 
-export type Scales = typeof scales[keyof typeof scales];
+export type Scales = (typeof scales)[keyof typeof scales];
 
 export interface ToggleProps extends InputHTMLAttributes<HTMLInputElement> {
   scale?: Scales;
@@ -31,6 +31,7 @@ export interface StyleToggleProps {
   $checkedColor: keyof Colors;
   $defaultColor: keyof Colors;
   scale: Scales;
+  disabled?: boolean;
 }
 
 export const scaleKeys = {
@@ -43,4 +44,4 @@ export const scaleKeys = {
   toggleWidth: "toggleWidth",
 } as const;
 
-export type ScaleKeys = typeof scaleKeys[keyof typeof scaleKeys];
+export type ScaleKeys = (typeof scaleKeys)[keyof typeof scaleKeys];

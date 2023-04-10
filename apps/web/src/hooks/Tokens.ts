@@ -6,22 +6,30 @@ import { TokenAddressMap } from '@pancakeswap/token-lists'
 import { GELATO_NATIVE } from 'config/constants'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
+import useSWRImmutable from 'swr/immutable'
 import {
   combinedTokenMapFromActiveUrlsAtom,
   combinedTokenMapFromOfficialsUrlsAtom,
   useUnsupportedTokenList,
   useWarningTokenList,
 } from '../state/lists/hooks'
-import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import useUserAddedTokens from '../state/user/hooks/useUserAddedTokens'
 import { isAddress } from '../utils'
-import { useBytes32TokenContract, useTokenContract } from './useContract'
 import useNativeCurrency from './useNativeCurrency'
 import { useActiveChainId } from './useActiveChainId'
+import multicall from '../utils/multicall'
+import erc20ABI from '../config/abi/erc20.json'
+import { ERC20_BYTES32_ABI } from '../config/abi/erc20'
+import { FetchStatus } from '../config/constants/types'
 
 const mapWithoutUrls = (tokenMap: TokenAddressMap<ChainId>, chainId: number) =>
   Object.keys(tokenMap[chainId] || {}).reduce<{ [address: string]: ERC20Token }>((newMap, address) => {
-    newMap[address] = tokenMap[chainId][address].token
+    const checksummedAddress = isAddress(address)
+
+    if (checksummedAddress && !newMap[checksummedAddress]) {
+      newMap[checksummedAddress] = tokenMap[chainId][address].token
+    }
+
     return newMap
   }, {})
 
@@ -38,7 +46,12 @@ export function useAllTokens(): { [address: string]: ERC20Token } {
         // reduce into all ALL_TOKENS filtered by the current chain
         .reduce<{ [address: string]: ERC20Token }>(
           (tokenMap_, token) => {
-            tokenMap_[token.address] = token
+            const checksummedAddress = isAddress(token.address)
+
+            if (checksummedAddress) {
+              tokenMap_[checksummedAddress] = token
+            }
+
             return tokenMap_
           },
           // must make a copy because reduce modifies the map, and we do not
@@ -55,6 +68,7 @@ export function useAllTokens(): { [address: string]: ERC20Token } {
 export function useOfficialsAndUserAddedTokens(): { [address: string]: ERC20Token } {
   const { chainId } = useActiveChainId()
   const tokenMap = useAtomValue(combinedTokenMapFromOfficialsUrlsAtom)
+
   const userAddedTokens = useUserAddedTokens()
   return useMemo(() => {
     return (
@@ -62,7 +76,12 @@ export function useOfficialsAndUserAddedTokens(): { [address: string]: ERC20Toke
         // reduce into all ALL_TOKENS filtered by the current chain
         .reduce<{ [address: string]: ERC20Token }>(
           (tokenMap_, token) => {
-            tokenMap_[token.address] = token
+            const checksummedAddress = isAddress(token.address)
+
+            if (checksummedAddress) {
+              tokenMap_[checksummedAddress] = token
+            }
+
             return tokenMap_
           },
           // must make a copy because reduce modifies the map, and we do not
@@ -92,7 +111,9 @@ export function useIsTokenActive(token: ERC20Token | undefined | null): boolean 
     return false
   }
 
-  return !!activeTokens[token.address]
+  const tokenAddress = isAddress(token.address)
+
+  return tokenAddress && !!activeTokens[tokenAddress]
 }
 
 // Check if currency is included in custom list from user storage
@@ -127,48 +148,56 @@ export function useToken(tokenAddress?: string): ERC20Token | undefined | null {
 
   const address = isAddress(tokenAddress)
 
-  const tokenContract = useTokenContract(address || undefined, false)
-  const tokenContractBytes32 = useBytes32TokenContract(address || undefined, false)
   const token: ERC20Token | undefined = address ? tokens[address] : undefined
 
-  const tokenName = useSingleCallResult(token ? undefined : tokenContract, 'name', undefined, NEVER_RELOAD)
-  const tokenNameBytes32 = useSingleCallResult(
-    token ? undefined : tokenContractBytes32,
-    'name',
-    undefined,
-    NEVER_RELOAD,
+  const { data, status } = useSWRImmutable(
+    !token && chainId && address && ['fetchTokenInfo', chainId, address],
+    async () => {
+      const calls = ['name', 'symbol', 'decimals'].map((method) => {
+        return { address: address.toString(), name: method }
+      })
+
+      return multicall(erc20ABI, calls, chainId)
+    },
   )
-  const symbol = useSingleCallResult(token ? undefined : tokenContract, 'symbol', undefined, NEVER_RELOAD)
-  const symbolBytes32 = useSingleCallResult(token ? undefined : tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
-  const decimals = useSingleCallResult(token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
+
+  const tokenName = data?.[0]?.[0]
+  const symbol = data?.[1]?.[0]
+  const decimals = data?.[2]?.[0]
+
+  const { data: dataBytes, status: statusBytes } = useSWRImmutable(
+    !token &&
+      chainId &&
+      address &&
+      (status === FetchStatus.Fetched || status === FetchStatus.Failed) &&
+      (!tokenName || !symbol) && ['fetchTokenInfo32', chainId, address],
+    async () => {
+      const calls = ['name', 'symbol'].map((method) => {
+        return { address: address.toString(), name: method }
+      })
+
+      return multicall(ERC20_BYTES32_ABI, calls, chainId)
+    },
+  )
+
+  const tokenNameBytes32 = dataBytes?.[0]?.[0]
+  const symbolBytes32 = dataBytes?.[1]?.[0]
 
   return useMemo(() => {
     if (token) return token
     if (!chainId || !address) return undefined
-    if (decimals.loading || symbol.loading || tokenName.loading) return null
-    if (decimals.result) {
+    if (status !== FetchStatus.Fetched && statusBytes !== FetchStatus.Fetched) return null
+    if (Number.isInteger(decimals)) {
       return new ERC20Token(
         chainId,
         address,
-        decimals.result[0],
-        parseStringOrBytes32(symbol.result?.[0], symbolBytes32.result?.[0], 'UNKNOWN'),
-        parseStringOrBytes32(tokenName.result?.[0], tokenNameBytes32.result?.[0], 'Unknown Token'),
+        decimals,
+        parseStringOrBytes32(symbol, symbolBytes32, 'UNKNOWN'),
+        parseStringOrBytes32(tokenName, tokenNameBytes32, 'Unknown Token'),
       )
     }
     return undefined
-  }, [
-    address,
-    chainId,
-    decimals.loading,
-    decimals.result,
-    symbol.loading,
-    symbol.result,
-    symbolBytes32.result,
-    token,
-    tokenName.loading,
-    tokenName.result,
-    tokenNameBytes32.result,
-  ])
+  }, [address, chainId, status, statusBytes, decimals, symbol, symbolBytes32, token, tokenName, tokenNameBytes32])
 }
 
 export function useCurrency(currencyId: string | undefined): Currency | ERC20Token | null | undefined {

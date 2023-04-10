@@ -1,6 +1,16 @@
 import { useRef, RefObject, useCallback, useState, useMemo } from 'react'
 import { Token } from '@pancakeswap/sdk'
-import { Text, Button, CloseIcon, IconButton, LinkExternal, Input, Link } from '@pancakeswap/uikit'
+import {
+  Text,
+  Button,
+  DeleteOutlineIcon,
+  IconButton,
+  BscScanIcon,
+  Input,
+  Link,
+  AutoColumn,
+  Column,
+} from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import Row, { RowBetween, RowFixed } from 'components/Layout/Row'
 import { useToken } from 'hooks/Tokens'
@@ -10,7 +20,6 @@ import { CurrencyLogo } from 'components/Logo'
 import { getBlockExploreLink, isAddress } from 'utils'
 import { useTranslation } from '@pancakeswap/localization'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import Column, { AutoColumn } from '../Layout/Column'
 import ImportRow from './ImportRow'
 import { CurrencyModalView } from './types'
 
@@ -73,15 +82,23 @@ export default function ManageTokens({
         <RowBetween key={token.address} width="100%">
           <RowFixed>
             <CurrencyLogo currency={token} size="20px" />
-            <Link external href={getBlockExploreLink(token.address, 'address', chainId)} color="textSubtle" ml="10px">
+            <Link
+              external
+              href={getBlockExploreLink(token.address, 'address', chainId)}
+              color="textSubtle"
+              ml="10px"
+              mr="3px"
+            >
               {token.symbol}
             </Link>
+            <a href={getBlockExploreLink(token.address, 'token', chainId)} target="_blank" rel="noreferrer noopener">
+              <BscScanIcon width="20px" color="textSubtle" />
+            </a>
           </RowFixed>
           <RowFixed>
             <IconButton variant="text" onClick={() => removeToken(chainId, token.address)}>
-              <CloseIcon />
+              <DeleteOutlineIcon color="textSubtle" />
             </IconButton>
-            <LinkExternal href={getBlockExploreLink(token.address, 'address', chainId)} />
           </RowFixed>
         </RowBetween>
       ))

@@ -1,10 +1,17 @@
 import styled from 'styled-components'
-import { Box, Button, Flex, Heading, LinkExternal, PageHeader, NextLinkFromReactRouter } from '@pancakeswap/uikit'
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  LinkExternal,
+  PageHeader,
+  NextLinkFromReactRouter,
+  PageSection,
+} from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import SectionsWithFoldableText from 'components/FoldableSection/SectionsWithFoldableText'
-import PageSection from 'components/PageSection'
-import { PageMeta } from 'components/Layout/Page'
 import { useGetCollections } from 'state/nftMarket/hooks'
 import { FetchStatus } from 'config/constants/types'
 import PageLoader from 'components/Loader/PageLoader'
@@ -69,7 +76,6 @@ const Home = () => {
 
   return (
     <>
-      <PageMeta />
       <StyledPageHeader>
         <StyledHeaderInner>
           <div>

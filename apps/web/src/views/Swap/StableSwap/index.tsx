@@ -1,15 +1,18 @@
+import { useCurrency } from 'hooks/Tokens'
 import { useEffect } from 'react'
-import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { Field } from 'state/swap/actions'
+import { useSwapState } from 'state/swap/hooks'
+import { useStableSwapPairs } from 'state/swap/useStableSwapPairs'
+import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import StableSwapForm from './components/StableSwapForm'
-import useStableConfig, { StableConfigContext, useStableFarms } from './hooks/useStableConfig'
+import useStableConfig, { StableConfigContext } from './hooks/useStableConfig'
 
 const StableSwapFormContainer = () => {
-  const stableFarms = useStableFarms()
+  const stablePairs = useStableSwapPairs()
 
   const { onCurrencySelection } = useSwapActionHandlers()
 
-  const stableTokenPair = stableFarms?.length ? stableFarms[0] : null
+  const stableTokenPair = stablePairs?.length ? stablePairs[0] : null
 
   useEffect(() => {
     if (stableTokenPair) {
@@ -18,13 +21,18 @@ const StableSwapFormContainer = () => {
     }
   }, [onCurrencySelection, stableTokenPair])
 
-  const { stableSwapConfig, ...stableConfig } = useStableConfig({
-    tokenA: stableTokenPair?.token0,
-    tokenB: stableTokenPair?.token1,
-  })
+  const {
+    [Field.INPUT]: { currencyId: inputCurrencyId },
+    [Field.OUTPUT]: { currencyId: outputCurrencyId },
+  } = useSwapState()
+
+  const inputCurrency = useCurrency(inputCurrencyId)
+  const outputCurrency = useCurrency(outputCurrencyId)
+
+  const stableConfig = useStableConfig({ tokenA: inputCurrency, tokenB: outputCurrency })
 
   return stableTokenPair ? (
-    <StableConfigContext.Provider value={{ stableSwapConfig, ...stableConfig }}>
+    <StableConfigContext.Provider value={stableConfig}>
       <StableSwapForm />
     </StableConfigContext.Provider>
   ) : null

@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
+  "globalDependencies": ["**/.env.*local"],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
@@ -9,12 +10,20 @@
       "outputs": ["coverage/**"],
       "dependsOn": ["^build"]
     },
+    "test:config": {
+      "dependsOn": ["^build"]
+    },
+    "build:storybook": {
+      "dependsOn": ["^build"],
+      "outputs": ["storybook-static/**"]
+    },
     "lint": {
       "outputs": []
     },
     "dev": {
       "cache": false,
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "persistent": true
     },
     "start": {
       "cache": false
@@ -30,8 +39,8 @@
       "cache": false
     },
     "postinstall": {
-      "inputs": ["src/config/abi/**"],
-      "outputs": ["src/config/abi/types/**"]
+      "inputs": ["src/config/abi/**", "**/abis/**"],
+      "outputs": ["src/config/abi/types/**", "**/abis/types/**"]
     }
   }
 }

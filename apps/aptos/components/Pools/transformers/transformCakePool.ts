@@ -41,6 +41,7 @@ const transformCakePool = ({
   cakeFarm,
   chainId,
   earningTokenPrice,
+  getNow,
 }) => {
   const userStakedAmount = _get(userInfo, 'amount', '0')
 
@@ -53,10 +54,10 @@ const transformCakePool = ({
   })
 
   let userData = {
-    allowance: new BigNumber(0),
-    pendingReward: new BigNumber(0),
-    stakedBalance: new BigNumber(0),
-    stakingTokenBalance: new BigNumber(0),
+    allowance: BIG_ZERO,
+    pendingReward: BIG_ZERO,
+    stakedBalance: BIG_ZERO,
+    stakingTokenBalance: BIG_ZERO,
   }
 
   const foundStakingBalance = balances?.find(
@@ -74,7 +75,7 @@ const transformCakePool = ({
   if (_toNumber(userStakedAmount) && _toNumber(totalStaked)) {
     const rewardDebt = _get(userInfo, 'reward_debt', '0')
 
-    const accCakePerShare = calcRewardCakePerShare(masterChefData, CAKE_PID)
+    const accCakePerShare = calcRewardCakePerShare(masterChefData, CAKE_PID, getNow)
     const pendingReward = calcPendingRewardCake(userStakedAmount, rewardDebt, accCakePerShare)
 
     userData = {

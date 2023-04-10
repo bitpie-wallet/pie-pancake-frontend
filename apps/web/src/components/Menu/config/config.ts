@@ -14,8 +14,7 @@ import {
 } from '@pancakeswap/uikit'
 import { ContextApi } from '@pancakeswap/localization'
 import { nftsBaseUrl } from 'views/Nft/market/constants'
-import { perpLangMap } from 'utils/getPerpetualLanguageCode'
-import { perpTheme } from 'utils/getPerpetualTheme'
+import { getPerpetualUrl } from 'utils/getPerpetualUrl'
 import { SUPPORT_ONLY_BSC } from 'config/constants/supportChains'
 
 export type ConfigMenuDropDownItemsType = DropdownMenuItems & { hideSubNav?: boolean }
@@ -55,27 +54,29 @@ const config: (
           href: '/swap',
         },
         {
-          label: t('Limit'),
-          href: '/limit-orders',
-          supportChainIds: SUPPORT_ONLY_BSC,
-          image: '/images/decorations/3d-coin.png',
-        },
-        {
           label: t('Liquidity'),
           href: '/liquidity',
         },
         {
           label: t('Perpetual'),
-          href: `https://perp.pancakeswap.finance/${perpLangMap(languageCode)}/futures/BTCUSDT?theme=${perpTheme(
+          href: getPerpetualUrl({
+            chainId,
+            languageCode,
             isDark,
-          )}`,
-          supportChainIds: SUPPORT_ONLY_BSC,
+          }),
+          confirmModalId: 'usCitizenConfirmModal',
           type: DropdownMenuItemType.EXTERNAL_LINK,
         },
         {
           label: t('Bridge'),
           href: 'https://bridge.pancakeswap.finance/',
           type: DropdownMenuItemType.EXTERNAL_LINK,
+        },
+        {
+          label: `${t('Limit')} (V2)`,
+          href: '/limit-orders',
+          supportChainIds: SUPPORT_ONLY_BSC,
+          image: '/images/decorations/3d-coin.png',
         },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
@@ -166,6 +167,10 @@ const config: (
           image: '/images/ifos/ifo-bunny.png',
         },
         {
+          label: t('Affiliate Program'),
+          href: '/affiliates-program',
+        },
+        {
           label: t('Voting'),
           href: '/voting',
           supportChainIds: SUPPORT_ONLY_BSC,
@@ -185,7 +190,7 @@ const config: (
         },
         {
           label: t('Blog'),
-          href: 'https://medium.com/pancakeswap',
+          href: 'https://blog.pancakeswap.finance',
           type: DropdownMenuItemType.EXTERNAL_LINK,
         },
         {

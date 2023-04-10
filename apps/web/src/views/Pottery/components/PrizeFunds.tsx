@@ -80,7 +80,7 @@ const PoolAllocations = () => {
     <StyledStepCard width={['100%', '280px', '330px', '380px']}>
       <StepCardInner height="auto">
         <Flex mb="34px" justifyContent="center">
-          <Image width={103} height={103} src="/images/pottery/chart.svg" />
+          <Image alt="pottery-prize-chart" width={103} height={103} src="/images/pottery/chart.svg" />
         </Flex>
         <AllocationGrid>
           <AllocationMatch color="#D750B2" text={t('Prize Pool')} />
@@ -153,7 +153,7 @@ const PrizeFunds: React.FC<React.PropsWithChildren> = () => {
       </Flex>
       <Text maxWidth="918px" mt="20px" fontSize="14px" color="textSubtle">
         {t(
-          'Since the rewards from lock-staking are only distributed at the end of the duration, the prize pool to be distributed in each of the 10 weeks upon deposit is borrowed from the CAKE treasury based on the estimated APY. The rewards at the end of the duration from the deposit will be used to repay the treasury and to distribute the 20% staking rewards. Because the APY may change over the duration based on other deposits and their lock-periods in the lock CAKE pool, there may be a small deviance from the above percentages specified (+/- 10%). But, ultimately all staking rewards net of the Pottery fees will be returned to depositors through prize pool or rewards -- the expected value is the same.',
+          'Since the rewards from lock-staking are only distributed at the end of the duration, the prize pool to be distributed in each of the 10 weeks upon deposit is borrowed from the CAKE treasury based on the estimated APR. The rewards at the end of the duration from the deposit will be used to repay the treasury and to distribute the 20% staking rewards. Because the APR may change over the duration based on other deposits and their lock-periods in the lock CAKE pool, there may be a small deviance from the above percentages specified (+/- 10%). But, ultimately all staking rewards net of the Pottery fees will be returned to depositors through prize pool or rewards -- the expected value is the same.',
         )}
       </Text>
       <Box width="100%" m="40px 0">

@@ -1,14 +1,14 @@
 import { useRef, useMemo } from 'react'
-import { latinise } from 'utils/latinise'
 import styled from 'styled-components'
-import { RowType } from '@pancakeswap/uikit'
+import { RowType, DesktopColumnSchema } from '@pancakeswap/uikit'
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/router'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import latinise from '@pancakeswap/utils/latinise'
 import { FARM_DEFAULT_DECIMALS } from 'components/Farms/constants'
+import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { getDisplayApr } from '../getDisplayApr'
 import Row, { RowProps } from './Row'
-import { DesktopColumnSchema, FarmWithStakedValue } from '../types'
 
 export interface ITableProps {
   farms: FarmWithStakedValue[]
@@ -37,7 +37,6 @@ const TableWrapper = styled.div`
 const StyledTable = styled.table`
   border-collapse: collapse;
   font-size: 14px;
-  border-radius: 4px;
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -49,7 +48,15 @@ const TableBody = styled.tbody`
       font-size: 16px;
       vertical-align: middle;
     }
-  }
+
+    :last-child {
+      td[colspan="7"] {
+        > div {
+          border-bottom-left-radius: 16px;
+          border-bottom-right-radius: 16px;
+        }
+      }
+    }
 `
 
 const TableContainer = styled.div`
@@ -95,7 +102,7 @@ const FarmTable: React.FC<React.PropsWithChildren<ITableProps>> = ({ farms, cake
     const { token, quoteToken } = farm
     const tokenAddress = token?.address
     const quoteTokenAddress = quoteToken?.address
-    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
+    const lpLabel = farm.lpSymbol
     const lowercaseQuery = latinise(typeof query?.search === 'string' ? query.search.toLowerCase() : '')
     const initialActivity = latinise(lpLabel?.toLowerCase()) === lowercaseQuery
     const row: RowProps = {
@@ -119,7 +126,7 @@ const FarmTable: React.FC<React.PropsWithChildren<ITableProps>> = ({ farms, cake
         token: farm.token,
         quoteToken: farm.quoteToken,
         isReady: farm.multiplier !== undefined,
-        isStable: farm.isStable,
+        isStaking: farm.userData?.stakedBalance.gt(0),
       },
       earned: {
         pid: farm.pid,

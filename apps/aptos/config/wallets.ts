@@ -1,5 +1,5 @@
-import { isIOS } from 'react-device-detect'
 import { WalletConfigV2 } from '@pancakeswap/ui-wallets'
+import { isFirefox } from 'react-device-detect'
 
 export enum ConnectorNames {
   Petra = 'petra',
@@ -9,6 +9,7 @@ export enum ConnectorNames {
   Blocto = 'blocto',
   TrustWallet = 'trustWallet',
   SafePal = 'safePal',
+  Rise = 'rise',
 }
 
 export const wallets: WalletConfigV2<ConnectorNames>[] = [
@@ -16,7 +17,9 @@ export const wallets: WalletConfigV2<ConnectorNames>[] = [
     id: 'petra',
     title: 'Petra',
     icon: '/images/wallets/petra.png',
-    installed: typeof window !== 'undefined' && Boolean(window.aptos),
+    get installed() {
+      return typeof window !== 'undefined' && Boolean(window.aptos)
+    },
     connectorId: ConnectorNames.Petra,
     downloadLink: {
       desktop: 'https://petra.app/',
@@ -26,7 +29,9 @@ export const wallets: WalletConfigV2<ConnectorNames>[] = [
     id: 'martian',
     title: 'Martian',
     icon: '/images/wallets/martian.png',
-    installed: typeof window !== 'undefined' && Boolean(window.martian),
+    get installed() {
+      return typeof window !== 'undefined' && Boolean(window.martian)
+    },
     connectorId: ConnectorNames.Martian,
     downloadLink: {
       desktop: 'https://martianwallet.xyz/',
@@ -36,7 +41,9 @@ export const wallets: WalletConfigV2<ConnectorNames>[] = [
     id: 'pontem',
     title: 'Pontem',
     icon: '/images/wallets/pontem.png',
-    installed: typeof window !== 'undefined' && Boolean(window.pontem),
+    get installed() {
+      return typeof window !== 'undefined' && Boolean(window.pontem)
+    },
     connectorId: ConnectorNames.Pontem,
     downloadLink: {
       desktop: 'https://chrome.google.com/webstore/detail/pontem-aptos-wallet/phkbamefinggmakgklpkljjmgibohnba',
@@ -68,11 +75,9 @@ export const wallets: WalletConfigV2<ConnectorNames>[] = [
     title: 'Trust Wallet',
     icon: 'https://pancakeswap.finance/images/wallets/trust.png',
     get installed() {
-      return typeof window !== 'undefined' && isIOS && Boolean(window.aptos) && Boolean((window.aptos as any)?.isTrust)
+      return typeof window !== 'undefined' && Boolean(window.aptos) && Boolean((window.aptos as any)?.isTrust)
     },
-    deepLink: isIOS
-      ? 'https://link.trustwallet.com/open_url?coin_id=637&url=https://aptos.pancakeswap.finance/'
-      : undefined,
+    deepLink: 'https://link.trustwallet.com/open_url?coin_id=637&url=https://aptos.pancakeswap.finance/',
     connectorId: ConnectorNames.TrustWallet,
   },
   {
@@ -83,5 +88,22 @@ export const wallets: WalletConfigV2<ConnectorNames>[] = [
       return typeof window !== 'undefined' && Boolean(window.safePal) && Boolean((window.safePal as any)?.sfpPlatform)
     },
     connectorId: ConnectorNames.SafePal,
+    downloadLink: {
+      desktop: 'https://chrome.google.com/webstore/detail/safepal-extension-wallet/lgmpcpglpngdoalbgeoldeajfclnhafa',
+    },
+  },
+  {
+    id: 'rise',
+    title: 'Rise Wallet',
+    icon: '/images/wallets/rise.png',
+    get installed() {
+      return typeof window !== 'undefined' && Boolean(window.rise)
+    },
+    connectorId: ConnectorNames.Rise,
+    downloadLink: {
+      desktop: isFirefox
+        ? 'https://addons.mozilla.org/en-US/firefox/addon/rise-wallet/'
+        : 'https://chrome.google.com/webstore/detail/rise-aptos-wallet/hbbgbephgojikajhfbomhlmmollphcad',
+    },
   },
 ]

@@ -4,7 +4,7 @@ import { ChainId, Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { Flex, Box, SwapVertIcon, IconButton, Pool } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
-import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { useIntersectionObserver } from '@pancakeswap/hooks'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { vaultPoolConfig } from 'config/constants/pools'
@@ -91,7 +91,9 @@ const FarmsPoolsRow = () => {
               <TopFarmPool
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                title={topFarm?.lpSymbol}
+                // eslint-disable-next-line no-useless-concat
+                title={`${topFarm?.lpSymbol}` + `${topFarm?.version === 3 ? ` v${topFarm.version}` : ''}`}
+                version={topFarm?.version}
                 percentage={topFarm?.apr + topFarm?.lpRewardsApr}
                 index={index}
                 visible={showFarms}

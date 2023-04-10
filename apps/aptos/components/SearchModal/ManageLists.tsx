@@ -13,6 +13,7 @@ import {
   Row,
   RowBetween,
   RowFixed,
+  ListLogo,
 } from '@pancakeswap/uikit'
 import { TokenList, Version } from '@pancakeswap/token-lists'
 import Card from 'components/Card'
@@ -33,7 +34,6 @@ import uriToHttp from '@pancakeswap/utils/uriToHttp'
 
 import { selectorByUrlsAtom, useActiveListUrls, useAllLists, useIsListActive } from 'state/lists/hooks'
 
-import { ListLogo } from '../Logo'
 import { CurrencyModalView } from './types'
 
 function listVersionLabel(version: Version): string {
@@ -111,7 +111,7 @@ const ListRow = memo(function ListRow({ listUrl }: { listUrl: string }) {
         </Button>
       )}
     </div>,
-    { placement: 'right-end', trigger: 'click' },
+    { placement: 'right-end', trigger: 'click', isInPortal: false },
   )
 
   if (!list) return null
@@ -291,7 +291,7 @@ function ManageLists({
         ) : null}
       </AutoColumn>
       {tempList && (
-        <AutoColumn style={{ paddingTop: 0 }}>
+        <AutoColumn style={{ marginTop: 8 }}>
           <Card py="12px" px="20px">
             <RowBetween>
               <RowFixed>

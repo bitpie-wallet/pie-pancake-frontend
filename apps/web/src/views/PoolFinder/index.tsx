@@ -1,5 +1,14 @@
 import { Currency, JSBI } from '@pancakeswap/sdk'
-import { AddIcon, Button, ChevronDownIcon, Text, useModal, NextLinkFromReactRouter } from '@pancakeswap/uikit'
+import {
+  AddIcon,
+  Button,
+  ChevronDownIcon,
+  Text,
+  useModal,
+  NextLinkFromReactRouter,
+  AutoColumn,
+  ColumnCenter,
+} from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import { BIG_INT_ZERO } from 'config/constants/exchange'
@@ -8,13 +17,12 @@ import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { AppBody, AppHeader } from '../../components/App'
 import { LightCard } from '../../components/Card'
-import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import Row from '../../components/Layout/Row'
 import Dots from '../../components/Loader/Dots'
 import { CurrencyLogo } from '../../components/Logo'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import CurrencySearchModal from '../../components/SearchModal/CurrencySearchModal'
-import { PairState, usePair } from '../../hooks/usePairs'
+import { PairState, useV2Pair } from '../../hooks/usePairs'
 import { usePairAdder } from '../../state/user/hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { currencyId } from '../../utils/currencyId'
@@ -39,10 +47,10 @@ export default function PoolFinder() {
   const native = useNativeCurrency()
 
   const [activeField, setActiveField] = useState<number>(Fields.TOKEN1)
-  const [currency0, setCurrency0] = useState<Currency | null>(() => native)
+  const [currency0, setCurrency0] = useState<Currency | null>(native)
   const [currency1, setCurrency1] = useState<Currency | null>(null)
 
-  const [pairState, pair] = usePair(currency0 ?? undefined, currency1 ?? undefined)
+  const [pairState, pair] = useV2Pair(currency0 ?? undefined, currency1 ?? undefined)
   const addPair = usePairAdder()
   useEffect(() => {
     if (pair) {
@@ -141,17 +149,22 @@ export default function PoolFinder() {
               hasPosition && pair ? (
                 <>
                   <MinimalPositionCard pair={pair} />
-                  <Button as={NextLinkFromReactRouter} to="/liquidity" variant="secondary" width="100%">
-                    {t('Manage this pool')}
+                  <Button
+                    as={NextLinkFromReactRouter}
+                    to={`/v2/pair/${currencyId(currency0)}/${currencyId(currency1)}`}
+                    variant="secondary"
+                    width="100%"
+                  >
+                    {t('Manage this pair')}
                   </Button>
                 </>
               ) : (
                 <LightCard padding="45px 10px">
                   <AutoColumn gap="sm" justify="center">
-                    <Text textAlign="center">{t('You don’t have liquidity in this pool yet.')}</Text>
+                    <Text textAlign="center">{t('You don’t have liquidity in this pair yet.')}</Text>
                     <Button
                       as={NextLinkFromReactRouter}
-                      to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
+                      to={`/v2/add/${currencyId(currency0)}/${currencyId(currency1)}`}
                       variant="secondary"
                     >
                       {t('Add Liquidity')}
@@ -162,13 +175,13 @@ export default function PoolFinder() {
             ) : validPairNoLiquidity ? (
               <LightCard padding="45px 10px">
                 <AutoColumn gap="sm" justify="center">
-                  <Text textAlign="center">{t('No pool found.')}</Text>
+                  <Text textAlign="center">{t('No pair found.')}</Text>
                   <Button
                     as={NextLinkFromReactRouter}
-                    to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
+                    to={`/v2/add/${currencyId(currency0)}/${currencyId(currency1)}`}
                     variant="secondary"
                   >
-                    {t('Create pool')}
+                    {t('Create pair')}
                   </Button>
                 </AutoColumn>
               </LightCard>
@@ -194,14 +207,6 @@ export default function PoolFinder() {
             prerequisiteMessage
           )}
         </AutoColumn>
-
-        {/* <CurrencySearchModal
-          isOpen={showSearch}
-          onCurrencySelect={handleCurrencySelect}
-          onDismiss={handleSearchDismiss}
-          showCommonBases
-          selectedCurrency={(activeField === Fields.TOKEN0 ? currency1 : currency0) ?? undefined}
-        /> */}
       </AppBody>
     </Page>
   )

@@ -1,13 +1,13 @@
-import React from "react";
+import { vi } from "vitest";
 import { renderWithProvider } from "../../testHelpers";
 import FallingBunnies from "../../components/FallingBunnies/FallingBunnies";
 
 beforeEach(() => {
-  jest.spyOn(global.Math, "random").mockReturnValue(0.5);
+  vi.spyOn(global.Math, "random").mockReturnValue(0.5);
 });
 
 afterEach(() => {
-  jest.spyOn(global.Math, "random").mockRestore();
+  vi.spyOn(global.Math, "random").mockRestore();
 });
 
 it("renders correctly", () => {
@@ -19,6 +19,7 @@ it("renders correctly", () => {
       -ms-flex-item-align: center;
       align-self: center;
       fill: var(--colors-text);
+      color: var(--colors-text);
       -webkit-flex-shrink: 0;
       -ms-flex-negative: 0;
       flex-shrink: 0;

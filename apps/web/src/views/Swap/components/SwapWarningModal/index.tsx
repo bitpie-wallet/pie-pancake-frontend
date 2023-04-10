@@ -13,8 +13,9 @@ import BTTWarning from './BTTWarning'
 import RugPullWarning from './RugPullWarning'
 import FREEWarning from './FREEWarning'
 import GalaWarning from './GalaWarning'
-import HayWarning from './HayWarning'
 import ABNBWarning from './ABNBWarning'
+import EURWarning from './EURWarning'
+import XCADWarning from './XCADWarning'
 
 const StyledModalContainer = styled(ModalContainer)`
   max-width: 440px;
@@ -67,20 +68,24 @@ const SwapWarningModal: React.FC<React.PropsWithChildren<SwapWarningModalProps>>
       symbol: SwapWarningTokensConfig.gala.symbol,
       component: <GalaWarning />,
     },
-    [SwapWarningTokensConfig.hay.address]: {
-      symbol: SwapWarningTokensConfig.hay.symbol,
-      component: <HayWarning />,
-    },
     [SwapWarningTokensConfig.abnbc.address]: {
       symbol: SwapWarningTokensConfig.abnbc.symbol,
       component: <ABNBWarning />,
+    },
+    [SwapWarningTokensConfig.ageur.address]: {
+      symbol: SwapWarningTokensConfig.ageur.symbol,
+      component: <EURWarning />,
+    },
+    [SwapWarningTokensConfig.xcad.address]: {
+      symbol: SwapWarningTokensConfig.xcad.symbol,
+      component: <XCADWarning />,
     },
   }
 
   const SWAP_WARNING = TOKEN_WARNINGS[swapCurrency.address]
 
   return (
-    <StyledModalContainer $minWidth="280px">
+    <StyledModalContainer minWidth="280px">
       <ModalHeader background={theme.colors.gradientCardHeader}>
         <Heading p="12px 24px">{t('Notice for trading %symbol%', { symbol: SWAP_WARNING.symbol })}</Heading>
       </ModalHeader>

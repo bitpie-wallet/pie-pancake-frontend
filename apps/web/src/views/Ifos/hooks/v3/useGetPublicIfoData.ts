@@ -1,12 +1,13 @@
 import BigNumber from 'bignumber.js'
 import { useState, useCallback } from 'react'
 import { BSC_BLOCK_TIME } from 'config'
+import round from 'lodash/round'
 import ifoV2Abi from 'config/abi/ifoV2.json'
 import ifoV3Abi from 'config/abi/ifoV3.json'
 import { bscTokens } from '@pancakeswap/tokens'
 import { Ifo, IfoStatus } from 'config/constants/types'
 
-import { useLpTokenPrice, usePriceCakeBusd } from 'state/farms/hooks'
+import { useLpTokenPrice, usePriceCakeUSD } from 'state/farms/hooks'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { multicallv2 } from 'utils/multicall'
 import { PublicIfoData } from '../../types'
@@ -34,12 +35,14 @@ const formatVestingInfo = (pool) => ({
   slicePeriodSeconds: pool ? pool[3].toNumber() : 0,
 })
 
+const ROUND_DIGIT = 3
+
 /**
  * Gets all public data of an IFO
  */
 const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
   const { address, version, plannedStartTime } = ifo
-  const cakePriceUsd = usePriceCakeBusd()
+  const cakePriceUsd = usePriceCakeUSD()
   const lpTokenPriceInUsd = useLpTokenPrice(ifo.currency.symbol)
   const currencyPriceInUSD = ifo.currency === bscTokens.cake ? cakePriceUsd : lpTokenPriceInUsd
 
@@ -55,6 +58,7 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
       offeringAmountPool: BIG_ZERO,
       limitPerUserInLP: BIG_ZERO,
       taxRate: 0,
+      distributionRatio: 0,
       totalAmountPool: BIG_ZERO,
       sumTaxesOverflow: BIG_ZERO,
       pointThreshold: 0,
@@ -71,6 +75,7 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
       offeringAmountPool: BIG_ZERO,
       limitPerUserInLP: BIG_ZERO,
       taxRate: 0,
+      distributionRatio: 0,
       totalAmountPool: BIG_ZERO,
       sumTaxesOverflow: BIG_ZERO,
       vestingInformation: {
@@ -178,6 +183,8 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
       // Calculate the total progress until finished or until start
       const progress = status === 'live' ? ((currentBlock - startBlockNum) / totalBlocks) * 100 : null
 
+      const totalOfferingAmount = poolBasicFormatted.offeringAmountPool.plus(poolUnlimitedFormatted.offeringAmountPool)
+
       setState((prev) => ({
         ...prev,
         isInitialized: true,
@@ -186,6 +193,10 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
         poolBasic: {
           ...poolBasicFormatted,
           taxRate: 0,
+          distributionRatio: round(
+            poolBasicFormatted.offeringAmountPool.div(totalOfferingAmount).toNumber(),
+            ROUND_DIGIT,
+          ),
           pointThreshold: pointThreshold ? pointThreshold[0].toNumber() : 0,
           admissionProfile:
             Boolean(admissionProfile && admissionProfile[0]) && admissionProfile[0] !== NO_QUALIFIED_NFT_ADDRESS
@@ -196,6 +207,10 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
         poolUnlimited: {
           ...poolUnlimitedFormatted,
           taxRate: taxRateNum,
+          distributionRatio: round(
+            poolUnlimitedFormatted.offeringAmountPool.div(totalOfferingAmount).toNumber(),
+            ROUND_DIGIT,
+          ),
           vestingInformation: formatVestingInfo(unlimitedVestingInformation),
         },
         status,

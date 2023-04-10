@@ -3,10 +3,12 @@ import { LinkExternal, ModalV2 } from '@pancakeswap/uikit'
 import DisclaimerModal from 'components/DisclaimerModal'
 import { ConnectorNames, getDocLink } from 'config/wallet'
 import { ExtendEthereum } from 'global'
-import { FC, useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
-import Farms, { FarmsContext } from './Farms'
+import { FarmsContext, FarmsV3Context } from './context'
+import Farms from './Farms'
+import FarmsV3 from './FarmsV3'
 
 export function useIsBloctoETH() {
   const { chain } = useNetwork()
@@ -30,6 +32,10 @@ function BloctoWarning() {
 
   const [close, setClose] = useState(false)
 
+  const handleSuccess = useCallback(() => {
+    setClose(true)
+  }, [])
+
   return (
     <ModalV2 isOpen={isBloctoETH && !close} closeOnOverlayClick={false}>
       <DisclaimerModal
@@ -52,13 +58,13 @@ function BloctoWarning() {
             content: t('I understand'),
           },
         ]}
-        onSuccess={() => setClose(true)}
+        onSuccess={handleSuccess}
       />
     </ModalV2>
   )
 }
 
-export const FarmsPageLayout: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
+export const FarmsPageLayout: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   return (
     <>
       <BloctoWarning />
@@ -67,4 +73,12 @@ export const FarmsPageLayout: FC<React.PropsWithChildren<unknown>> = ({ children
   )
 }
 
-export { FarmsContext }
+export const FarmsV3PageLayout: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
+  return (
+    <>
+      <FarmsV3>{children}</FarmsV3>
+    </>
+  )
+}
+
+export { FarmsContext, FarmsV3Context }

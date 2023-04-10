@@ -1,8 +1,11 @@
+import { vi, describe, it } from 'vitest'
 import { retry, RetryableError } from './retry'
 
-describe('retry', () => {
+describe.concurrent('retry', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation()
+    vi.spyOn(console, 'error').mockImplementation(() => {
+      //
+    })
   })
   function makeFn<T>(fails: number, result: T, retryable = true): () => Promise<T> {
     return async () => {
@@ -47,9 +50,9 @@ describe('retry', () => {
   })
 
   async function checkTime(fn: () => Promise<any>, min: number, max: number) {
-    const time = new Date().getTime()
+    const time = Date.now()
     await fn()
-    const diff = new Date().getTime() - time
+    const diff = Date.now() - time
     expect(diff).toBeGreaterThanOrEqual(min)
     expect(diff).toBeLessThanOrEqual(max)
   }

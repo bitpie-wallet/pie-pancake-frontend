@@ -1,12 +1,9 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { Card, Flex, Heading, Message, MessageText } from '@pancakeswap/uikit'
+import { Card, Flex, Heading } from '@pancakeswap/uikit'
 import Page from 'components/Layout/Page'
 import { useMemo } from 'react'
-import { checkIsStableSwap } from 'state/info/constant'
 import {
-  useAllPoolDataSWR,
   useAllTokenDataSWR,
-  useGetChainName,
   useProtocolChartDataSWR,
   useProtocolDataSWR,
   useProtocolTransactionsSWR,
@@ -18,6 +15,7 @@ import PoolTable from 'views/Info/components/InfoTables/PoolsTable'
 import TokenTable from 'views/Info/components/InfoTables/TokensTable'
 import TransactionTable from 'views/Info/components/InfoTables/TransactionsTable'
 import HoverableChart from '../components/InfoCharts/HoverableChart'
+import { usePoolsData } from '../hooks/usePoolsData'
 
 export const ChartCardsContainer = styled(Flex)`
   justify-content: space-between;
@@ -32,7 +30,7 @@ export const ChartCardsContainer = styled(Flex)`
 
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: row;
-  } ;
+  }
 `
 
 const Overview: React.FC<React.PropsWithChildren> = () => {
@@ -58,29 +56,14 @@ const Overview: React.FC<React.PropsWithChildren> = () => {
       .filter((token) => token.name !== 'unknown')
   }, [allTokens])
 
-  const allPoolData = useAllPoolDataSWR()
-  // const allPoolData = useAllPoolData()
-  const poolDatas = useMemo(() => {
-    return Object.values(allPoolData)
-      .map((pool) => pool.data)
-      .filter((pool) => pool.token1.name !== 'unknown' && pool.token0.name !== 'unknown')
-  }, [allPoolData])
+  const { poolsData } = usePoolsData()
 
   const somePoolsAreLoading = useMemo(() => {
-    return poolDatas.some((pool) => !pool?.token0Price)
-  }, [poolDatas])
+    return poolsData.some((pool) => !pool?.token0Price)
+  }, [poolsData])
 
-  const isStableSwap = checkIsStableSwap()
-  const chainName = useGetChainName()
   return (
     <Page>
-      {chainName === 'BSC' && !isStableSwap && (
-        <Message variant="warning" mb="10px">
-          <MessageText fontSize={16}>
-            {t('PancakeSwap Info is currently under maintenance. Data may not be accurate or up-to-date.')}
-          </MessageText>
-        </Message>
-      )}
       <Heading scale="lg" mb="16px" id="info-overview-title">
         {t('PancakeSwap Info & Analytics')}
       </Heading>
@@ -113,7 +96,7 @@ const Overview: React.FC<React.PropsWithChildren> = () => {
       <Heading scale="lg" mt="40px" mb="16px">
         {t('Top Pairs')}
       </Heading>
-      <PoolTable poolDatas={poolDatas} loading={somePoolsAreLoading} />
+      <PoolTable poolDatas={poolsData} loading={somePoolsAreLoading} />
       <Heading scale="lg" mt="40px" mb="16px">
         {t('Transactions')}
       </Heading>

@@ -1,12 +1,12 @@
 import { useTranslation } from '@pancakeswap/localization'
 import { Flex, Skeleton, Text } from '@pancakeswap/uikit'
-import BigNumber from 'bignumber.js'
+import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useContext } from 'react'
 import styled from 'styled-components'
+import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { HarvestActionContainer, ProxyHarvestActionContainer } from '../FarmTable/Actions/HarvestAction'
 import { ProxyStakedContainer, StakedContainer } from '../FarmTable/Actions/StakedAction'
-import { FarmWithStakedValue } from '../types'
 import BoostedAction from '../YieldBooster/components/BoostedAction'
 import { YieldBoosterStateContext } from '../YieldBooster/components/ProxyFarmContainer'
 import HarvestAction from './HarvestAction'
@@ -93,11 +93,11 @@ const CardActions: React.FC<React.PropsWithChildren<FarmCardActionsProps>> = ({
           )}
           desc={(actionBtn) => <ActionContainer>{actionBtn}</ActionContainer>}
           farmPid={farm.pid}
-          lpTotalSupply={farm.lpTotalSupply}
+          lpTokenStakedAmount={farm.lpTokenStakedAmount}
           userBalanceInFarm={
             (stakedBalance.plus(tokenBalance).gt(0)
               ? stakedBalance.plus(tokenBalance)
-              : proxy?.stakedBalance.plus(proxy?.tokenBalance)) ?? new BigNumber(0)
+              : proxy?.stakedBalance.plus(proxy?.tokenBalance)) ?? BIG_ZERO
           }
         />
       )}
