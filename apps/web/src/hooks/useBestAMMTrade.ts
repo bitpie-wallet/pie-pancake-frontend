@@ -91,11 +91,11 @@ export function useBestAMMTrade({ type = 'quoter', ...params }: useBestAMMTradeO
   const apiAutoRevalidate =
     typeof autoRevalidate === 'boolean' ? autoRevalidate : isQuoterAPIEnabled && !isOffChainEnabled
 
-  const bestTradeFromQuoterApi = useBestAMMTradeFromQuoterApi({
-    ...params,
-    enabled: Boolean(enabled && isQuoterAPIEnabled),
-    autoRevalidate: apiAutoRevalidate,
-  })
+  // const bestTradeFromQuoterApi = useBestAMMTradeFromQuoterApi({
+  //   ...params,
+  //   enabled: Boolean(enabled && isQuoterAPIEnabled),
+  //   autoRevalidate: apiAutoRevalidate,
+  // })
 
   const quoterAutoRevalidate =
     typeof autoRevalidate === 'boolean' ? autoRevalidate : isQuoterEnabled && !isOffChainEnabled
@@ -108,10 +108,10 @@ export function useBestAMMTrade({ type = 'quoter', ...params }: useBestAMMTradeO
   return useMemo(() => {
     const { trade: tradeFromOffchain } = bestTradeFromOffchain
     const { trade: tradeFromQuoter } = bestTradeFromQuoter
-    const { trade: tradeFromApi } = bestTradeFromQuoterApi
+    // const { trade: tradeFromApi } = bestTradeFromQuoterApi
 
-    const quoterTrade = tradeFromApi || tradeFromQuoter
-    const bestTradeFromQuoter_ = isQuoterAPIEnabled ? bestTradeFromQuoterApi : bestTradeFromQuoter
+    const quoterTrade = tradeFromQuoter
+    const bestTradeFromQuoter_ = bestTradeFromQuoter
 
     if (!tradeFromOffchain && !quoterTrade) {
       return bestTradeFromOffchain
@@ -130,7 +130,7 @@ export function useBestAMMTrade({ type = 'quoter', ...params }: useBestAMMTradeO
 
     // console.log('[BEST Trade] Offchain trade is used', tradeFromOffchain)
     return bestTradeFromOffchain
-  }, [bestTradeFromOffchain, bestTradeFromQuoter, bestTradeFromQuoterApi, isQuoterAPIEnabled])
+  }, [bestTradeFromOffchain, bestTradeFromQuoter, isQuoterAPIEnabled])
 }
 
 function bestTradeHookFactory({
@@ -205,9 +205,8 @@ function bestTradeHookFactory({
       ],
       queryFn: async () => {
         const deferAmount = CurrencyAmount.fromRawAmount(amount.currency, deferQuotient)
-        const label = `[BEST_AMM](${key}) chain ${currency.chainId}, ${deferAmount.toExact()} ${
-          amount.currency.symbol
-        } -> ${currency.symbol}, tradeType ${tradeType}`
+        const label = `[BEST_AMM](${key}) chain ${currency.chainId}, ${deferAmount.toExact()} ${amount.currency.symbol
+          } -> ${currency.symbol}, tradeType ${tradeType}`
         SmartRouter.log(label)
         SmartRouter.metric(label, candidatePools)
         const res = await getBestTrade(deferAmount, currency, tradeType, {
