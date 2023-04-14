@@ -3,6 +3,8 @@ import { enum as zEnum, string as zString, object as zObject } from 'zod'
 import { v4 as uuid } from 'uuid'
 import HmacSHA256 from 'crypto-js/hmac-sha256'
 import EncodeHex from 'crypto-js/enc-hex'
+import axios from 'axios'
+import { SocksProxyAgent } from 'socks-proxy-agent'
 
 const host = 'https://avengerdao.org'
 const url = '/api/v1/address-security'
@@ -14,6 +16,7 @@ const appSecret = process.env.RISK_APP_SECRET
 const zChainId = zEnum(['56'])
 
 const zAddress = zString().regex(/^0x[a-fA-F0-9]{40}$/)
+const proxy = 'socks5://127.0.0.1:1080';
 
 const zParams = zObject({
   chainId: zChainId,
@@ -55,12 +58,10 @@ const handler: NextApiHandler = async (req, res) => {
     }
   }
 
-  const response = await fetch(endpoint, {
-    headers,
-    body,
-    method,
-  })
-  const json = await response.json()
+  const agent = new SocksProxyAgent(proxy)
+  const response = await axios.post(endpoint, body, { headers, httpAgent: agent })
+
+  const json = await response.data()
 
   res.setHeader('Cache-Control', 's-maxage=86400, max-age=3600')
 
